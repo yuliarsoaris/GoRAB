@@ -1,0 +1,1942 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>RAB Gedung</title>
+<meta name="theme-color" content="#0B6B7A">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="RAB Gedung">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<style>
+:root { color-scheme: light dark; }
+body { margin: 0; font: 14px system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
+img { max-width: 100%; }
+[hidden] { display: none !important; }
+</style>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: sticky total bar on top, four work tabs at the bottom, content as stacked sheets like a printed RAB. */
+:root {
+  --bg: #EDF0EE;
+  --surface: #FFFFFF;
+  --surface2: #E2E9E7;
+  --field: #F6F8F7;
+  --ink: #14262B;
+  --muted: #566A6E;
+  --line: #C7D2CF;
+  --accent: #0B6B7A;
+  --accent-ink: #FFFFFF;
+  --accent-soft: #D3EAED;
+  --warn: #8A5200;
+  --danger: #B3261E;
+  --danger-soft: #F8DEDB;
+  --ok: #1B7347;
+  --font-display: "Barlow Condensed", "Arial Narrow", "Roboto Condensed", sans-serif;
+  --font-body: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0D1517; --surface: #142023; --surface2: #1C2D31; --field: #0F1A1D;
+    --ink: #E5EEEE; --muted: #93A8AC; --line: #2A3C40;
+    --accent: #55C3D5; --accent-ink: #07252B; --accent-soft: #163A41;
+    --warn: #E5A64A; --danger: #FF8F86; --danger-soft: #3B1F1D; --ok: #66C795;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0D1517; --surface: #142023; --surface2: #1C2D31; --field: #0F1A1D;
+  --ink: #E5EEEE; --muted: #93A8AC; --line: #2A3C40;
+  --accent: #55C3D5; --accent-ink: #07252B; --accent-soft: #163A41;
+  --warn: #E5A64A; --danger: #FF8F86; --danger-soft: #3B1F1D; --ok: #66C795;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--ink); font-family: var(--font-body); font-size: 15px; line-height: 1.45; }
+body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 10; background: var(--surface); }
+.wrap { max-width: 680px; margin: 0 auto; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+.mono { font-family: var(--font-mono); font-variant-numeric: tabular-nums; }
+
+/* top bar */
+.top { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 9; background: var(--surface); border-bottom: 1px solid var(--line); }
+.top .wrap { display: flex; align-items: flex-end; justify-content: space-between; gap: 12px; padding-block: 10px; }
+.top .who { min-width: 0; }
+.kicker { font-family: var(--font-display); font-weight: 600; font-size: 13px; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); }
+.pname { font-family: var(--font-display); font-weight: 700; font-size: 22px; line-height: 1.1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.top .tot { text-align: right; flex-shrink: 0; }
+.top .tot b { display: block; font-family: var(--font-mono); font-weight: 500; font-size: 17px; color: var(--accent); }
+
+main .wrap { padding-block: 16px calc(84px + env(safe-area-inset-bottom, 0px)); display: flex; flex-direction: column; gap: 14px; }
+h2 { margin: 0; font-family: var(--font-display); font-weight: 700; font-size: 24px; letter-spacing: .01em; }
+h3 { margin: 0; font-family: var(--font-display); font-weight: 600; font-size: 14px; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); }
+p.hint { margin: 0; font-size: 13px; color: var(--muted); }
+.sheet { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 14px; display: flex; flex-direction: column; gap: 12px; min-width: 0; }
+.note { background: var(--accent-soft); color: var(--ink); border-radius: 8px; padding: 10px 12px; font-size: 13px; }
+
+/* fields */
+.fld { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
+.fld > span { font-family: var(--font-display); font-weight: 600; font-size: 12.5px; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
+input, select { width: 100%; min-width: 0; height: 42px; padding: 0 10px; font: inherit; font-size: 16px; color: var(--ink); background: var(--field); border: 1px solid var(--line); border-radius: 8px; }
+input[data-n] { text-align: right; font-family: var(--font-mono); font-size: 15px; }
+input[readonly] { background: var(--surface2); color: var(--muted); }
+select { appearance: auto; }
+input:focus-visible, select:focus-visible, button:focus-visible, summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+.g2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.g3 { display: grid; grid-template-columns: 1fr .8fr 1.5fr; gap: 8px; }
+.g3k { display: grid; grid-template-columns: 1fr .8fr 1.4fr; gap: 8px; }
+
+/* buttons */
+button { font: inherit; cursor: pointer; }
+.btn { height: 42px; padding: 0 14px; border-radius: 8px; border: 1px solid var(--line); background: var(--surface); color: var(--ink); font-weight: 500; }
+.katmv { display: flex; justify-content: space-between; align-items: center; gap: 8px; padding-bottom: 8px; border-bottom: 1px solid var(--line); }
+.pick { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 6px; }
+.pick label { display: flex; align-items: center; gap: 6px; min-height: 40px; padding: 0 8px; border: 1px solid var(--line); border-radius: 8px; background: var(--surface); font-size: 13px; }
+.pick input { width: 18px; height: 18px; margin: 0; accent-color: var(--accent); flex: none; }
+.btn.primary { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+.btn.ghost { background: transparent; }
+.btn.small { height: 34px; padding: 0 10px; font-size: 13px; }
+.btn[data-danger] { color: var(--danger); border-color: var(--danger); background: transparent; }
+.btn[data-armed="1"] { background: var(--danger); color: var(--surface); }
+.btn:disabled { opacity: .45; cursor: not-allowed; }
+.row { display: flex; flex-wrap: wrap; gap: 8px; }
+.row > .btn { flex: 1 1 140px; }
+
+/* project list */
+.plist { display: flex; flex-direction: column; gap: 8px; }
+.prow { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+.prow .pcard { flex: 1 1 200px; min-width: 0; }
+.prow .btn { flex: 0 0 auto; }
+.pcard { display: flex; justify-content: space-between; align-items: center; gap: 10px; width: 100%; text-align: left; padding: 10px 12px; background: var(--field); border: 1px solid var(--line); border-radius: 8px; color: var(--ink); }
+.pcard[aria-current="true"] { border-color: var(--accent); background: var(--accent-soft); }
+.pcard .pn { min-width: 0; font-weight: 600; overflow-wrap: anywhere; }
+.pcard .pl { font-size: 12.5px; color: var(--muted); }
+.pcard .pt { font-family: var(--font-mono); font-size: 13px; flex-shrink: 0; }
+
+/* RAB sheets */
+.div { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; overflow: hidden; min-width: 0; }
+.div-h { display: grid; grid-template-columns: auto 1fr; gap: 4px 10px; align-items: center; padding: 10px 12px; background: var(--surface2); }
+.roman { font-family: var(--font-display); font-weight: 700; font-size: 22px; min-width: 28px; }
+.div-h input { height: 38px; font-weight: 600; background: var(--surface); }
+.div-h select { grid-column: 2; height: 38px; font-weight: 600; color: var(--ink); background: var(--surface); }
+.div-sub { grid-column: 2; display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 4px 10px; font-size: 12.5px; color: var(--muted); }
+.tgl { height: 34px; padding: 0 10px; border: 1px solid var(--line); border-radius: 8px; background: var(--surface); color: var(--accent); font: inherit; font-size: 13px; font-weight: 500; }
+.sub-r { white-space: nowrap; }
+.div-sub b { font-family: var(--font-mono); font-weight: 500; color: var(--ink); font-size: 14px; }
+.items { display: flex; flex-direction: column; }
+.item { padding: 12px; display: flex; flex-direction: column; gap: 8px; border-top: 1px solid var(--line); }
+.item-top { display: grid; grid-template-columns: auto 1fr auto; gap: 8px; align-items: center; }
+.no { font-family: var(--font-mono); font-size: 13px; color: var(--muted); min-width: 20px; }
+.item-bot { display: grid; grid-template-columns: 1fr auto; gap: 8px; align-items: center; }
+.item-note { font-size: 12.5px; color: var(--warn); }
+.item-bot .jml { font-family: var(--font-mono); font-weight: 500; font-size: 15px; text-align: right; }
+.div-f { display: flex; flex-wrap: wrap; gap: 8px; padding: 12px; border-top: 1px solid var(--line); }
+.div-f .btn { flex: 1 1 130px; }
+.empty { padding: 14px 12px; font-size: 13px; color: var(--muted); border-top: 1px solid var(--line); }
+.tag { display: inline-block; font-family: var(--font-display); font-weight: 600; font-size: 12px; letter-spacing: .1em; text-transform: uppercase; padding: 1px 7px; border-radius: 4px; background: var(--accent-soft); color: var(--accent); }
+
+/* AHSP */
+details.ahsp { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; min-width: 0; }
+details.ahsp > summary { list-style: none; cursor: pointer; padding: 12px; display: grid; grid-template-columns: 1fr auto; gap: 2px 10px; align-items: center; }
+details.ahsp > summary::-webkit-details-marker { display: none; }
+.s-name { font-weight: 600; overflow-wrap: anywhere; }
+.s-price { font-family: var(--font-mono); font-size: 14px; color: var(--accent); text-align: right; }
+.ahsp-body { padding: 0 12px 12px; display: flex; flex-direction: column; gap: 12px; border-top: 1px solid var(--line); padding-top: 12px; }
+.kom { background: var(--field); border: 1px solid var(--line); border-radius: 8px; padding: 10px; display: flex; flex-direction: column; gap: 8px; }
+.kom-top { display: grid; grid-template-columns: 96px 1fr; gap: 8px; }
+.kom-bot { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+.kom-bot b { font-family: var(--font-mono); font-weight: 500; }
+.ahsp-sum { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; font-size: 12.5px; color: var(--muted); }
+.ahsp-sum b { display: block; font-family: var(--font-mono); font-weight: 500; font-size: 13px; color: var(--ink); }
+
+/* Rekap */
+.line { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; padding: 7px 0; border-bottom: 1px dashed var(--line); }
+.line:last-child { border-bottom: 0; }
+.line span:first-child { min-width: 0; overflow-wrap: anywhere; }
+.line .v { font-family: var(--font-mono); font-size: 14px; text-align: right; flex-shrink: 0; }
+.line.strong { font-weight: 600; }
+.line.total { border-bottom: 0; border-top: 2px solid var(--ink); margin-top: 4px; padding-top: 10px; font-family: var(--font-display); font-weight: 700; font-size: 20px; }
+.line.total .v { font-size: 18px; color: var(--accent); }
+.pct { font-size: 12px; color: var(--muted); font-family: var(--font-mono); margin-left: 6px; }
+.terbilang { font-style: italic; font-size: 14px; color: var(--muted); overflow-wrap: anywhere; }
+textarea.copybox { width: 100%; min-height: 160px; font-family: var(--font-mono); font-size: 13px; color: var(--ink); background: var(--field); border: 1px solid var(--line); border-radius: 8px; padding: 10px; }
+
+/* bottom tabs */
+.tabs { position: fixed; left: 0; right: 0; bottom: 0; z-index: 9; background: var(--surface); border-top: 1px solid var(--line); padding-bottom: env(safe-area-inset-bottom, 0px); }
+.tabs .wrap { display: flex; gap: 2px; padding-block: 6px; overflow-x: auto; scrollbar-width: none; -webkit-overflow-scrolling: touch; }
+.tabs .wrap::-webkit-scrollbar { display: none; }
+.tab { flex: 1 0 auto; min-width: 54px; height: 50px; padding: 0 8px; border: 0; border-radius: 8px; background: transparent; color: var(--muted); font-family: var(--font-display); font-weight: 600; font-size: 12px; letter-spacing: .01em; line-height: 1.05; text-align: center; text-transform: uppercase; display: flex; align-items: center; justify-content: center; }
+.mcard { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 12px; display: flex; flex-direction: column; gap: 8px; min-width: 0; }
+.mcard .used { font-size: 12.5px; color: var(--muted); }
+.mcard-bot { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 8px; }
+.mcard-act { display: flex; gap: 6px; margin-left: auto; }
+.mv { min-width: 44px; padding: 0 8px; }
+.dm-row { display: grid; grid-template-columns: auto 1fr auto; gap: 6px 10px; align-items: start; padding: 8px 0; border-top: 1px solid var(--line); }
+.dm-row .roman { padding-top: 4px; }
+.dm-row .mcard-act { margin-left: 0; padding-top: 2px; }
+.dm-name { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
+.dm-name small { font-size: 12px; color: var(--muted); }
+details.grp.nonum > summary { grid-template-columns: 1fr auto; }
+.dm-row.nonum { grid-template-columns: 1fr auto; }
+@media (max-width: 440px) { .dm-row { grid-template-columns: auto 1fr; } .dm-row .mcard-act { grid-column: 2; } .dm-row.nonum { grid-template-columns: 1fr; } .dm-row.nonum .mcard-act { grid-column: 1; } }
+details.grp { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; overflow: hidden; min-width: 0; }
+details.grp > summary { list-style: none; cursor: pointer; display: grid; grid-template-columns: auto 1fr auto; gap: 10px; align-items: center; padding: 10px 12px; background: var(--surface2); }
+details.grp > summary::-webkit-details-marker { display: none; }
+.g-name { font-weight: 600; overflow-wrap: anywhere; }
+.g-count { font-size: 12.5px; color: var(--muted); white-space: nowrap; }
+.g-count::after { content: " \25B8"; }
+details.grp[open] .g-count::after { content: " \25BE"; }
+.grp-body { padding: 12px; display: flex; flex-direction: column; gap: 10px; }
+.tab[aria-current="page"] { background: var(--accent-soft); color: var(--accent); }
+
+#toast { position: fixed; left: 50%; transform: translateX(-50%); bottom: calc(80px + env(safe-area-inset-bottom, 0px)); z-index: 12; max-width: min(92vw, 420px); background: var(--ink); color: var(--bg); padding: 9px 14px; border-radius: 8px; font-size: 13.5px; opacity: 0; pointer-events: none; transition: opacity .15s; }
+#toast.on { opacity: 1; }
+@media (prefers-reduced-motion: reduce) { #toast { transition: none; } }
+@media (max-width: 380px) { .g2 { grid-template-columns: 1fr; } .tab small { display: none; } }
+/* BQ dan RKS */
+textarea.rksbox { width: 100%; min-height: 110px; padding: 9px 10px; font: inherit; font-size: 15px; line-height: 1.4; color: var(--ink); background: var(--field); border: 1px solid var(--line); border-radius: 8px; resize: vertical; }
+.bqi { display: grid; grid-template-columns: auto 1fr auto; gap: 8px; align-items: baseline; padding: 7px 0; border-top: 1px solid var(--line); font-size: 14px; }
+.bqi:first-child { border-top: 0; }
+.bqi .no { color: var(--muted); font-size: 12.5px; }
+.bqi .vol { font-family: var(--font-mono); font-size: 13px; white-space: nowrap; }
+/* Kurva S */
+h3.sec { margin: 8px 0 0; font-family: var(--font-display); font-size: 18px; letter-spacing: .02em; }
+.kchart { width: 100%; height: auto; display: block; }
+.kchart text { font-family: var(--font-body); font-size: 9px; fill: var(--muted); }
+.kchart .grid { stroke: var(--line); stroke-width: .6; }
+.kchart .bar { fill: var(--accent-soft); stroke: var(--accent); stroke-width: .5; }
+.kchart .curve { fill: none; stroke: var(--accent); stroke-width: 2; stroke-linejoin: round; }
+.kchart .dot { fill: var(--accent); }
+.ktbl { width: 100%; border-collapse: collapse; font-size: 13px; }
+.ktbl th, .ktbl td { padding: 5px 8px; border-bottom: 1px solid var(--line); text-align: right; font-variant-numeric: tabular-nums; }
+.ktbl th:first-child, .ktbl td:first-child { text-align: left; }
+.ktbl th { color: var(--muted); font-weight: 600; font-size: 12px; }
+.krow { display: grid; grid-template-columns: 1fr auto; gap: 4px 10px; align-items: end; padding: 8px 0; border-top: 1px solid var(--line); }
+.krow:first-child { border-top: 0; padding-top: 0; }
+.krow-t { grid-column: 1 / -1; font-size: 14px; overflow-wrap: anywhere; }
+.krow-t b { color: var(--accent); font-family: var(--font-mono); font-size: 12.5px; margin-left: 6px; white-space: nowrap; }
+.krow .g2 { grid-column: 1 / -1; }
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <div class="who"><div class="kicker">Rencana Anggaran Biaya</div><div class="pname" data-k="pname"></div></div>
+    <div class="tot"><div class="kicker">Total dibulatkan</div><b data-k="grand"></b></div>
+  </div>
+</header>
+
+<main><div class="wrap" id="view"></div></main>
+
+<nav class="tabs" aria-label="Bagian aplikasi"><div class="wrap" id="nav"></div></nav>
+<div id="toast" role="status" aria-live="polite"></div>
+<input type="file" id="file-in" accept=".json,application/json" hidden>
+
+<script>
+if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) {
+  window.addEventListener('load', function () { navigator.serviceWorker.register('sw.js').catch(function () {}); });
+}
+</script>
+<script>
+(function () {
+  'use strict';
+  var KEY = 'rab-gedung-v1';
+  var JENIS = { upah: 'Upah', bahan: 'Material', alat: 'Sewa alat' };
+  var TABS = [['proyek', 'Proyek'], ['upah', 'Upah'], ['bahan', 'Material'], ['alat', 'Sewa Alat'], ['ahsp', 'AHSP'], ['rab', 'RAB'], ['rekap', 'Rekap'], ['kurva', 'Kurva S'], ['bq', 'BQ'], ['rks', 'RKS']];
+  var LIB_NOTE = 'Upah, Material, Sewa Alat, dan AHSP adalah satu perpustakaan yang saling terhubung. Perpustakaan ini dipakai semua proyek, otomatis ikut ke proyek baru, dan tidak berubah saat proyek diubah.';
+  /* Divisi pekerjaan standar, dipakai sebagai susunan awal setiap proyek baru. */
+  var STD_DIV = ['Pekerjaan Persiapan', 'Pekerjaan Tanah', 'Pekerjaan Pondasi', 'Pekerjaan Kayu', 'Pekerjaan Dinding dan Plesteran',
+    'Pekerjaan Penutup Lantai Dinding', 'Pekerjaan Penutup Atap', 'Pekerjaan Plafond', 'Pekerjaan Pengecatan', 'Pekerjaan Kusen Pintu Jendela',
+    'Pekerjaan Mekanikal Elektrikal', 'Pekerjaan Sanitasi dan Plumbing', 'Pekerjaan Interior dan Aksesoris'];
+  /* Templat awal RKS (boleh diubah sepenuhnya oleh perencana) */
+  var RKS_TPL = {"umum": "1. Pekerjaan dilaksanakan sesuai gambar kerja, Rencana Kerja dan Syarat-Syarat (RKS) ini, berita acara penjelasan pekerjaan, dan petunjuk Pengawas lapangan.\n2. Bila ada perbedaan antara gambar, RKS, dan Bill of Quantity, Kontraktor wajib melaporkannya secara tertulis kepada Perencana untuk diputuskan sebelum pekerjaan dimulai.\n3. Kontraktor menyediakan tenaga kerja, bahan, peralatan, dan semua keperluan lain untuk menyelesaikan pekerjaan sampai dapat berfungsi dengan baik.\n4. Bahan yang dipakai harus baru, berkualitas baik, dan sesuai spesifikasi. Contoh bahan diajukan untuk disetujui sebelum dipasang.\n5. Kontraktor menerapkan keselamatan dan kesehatan kerja (K3), menjaga kebersihan lokasi, dan bertanggung jawab atas keamanan bahan serta pekerjaan yang sudah terpasang.\n6. Pekerjaan yang tidak sesuai syarat harus dibongkar dan diperbaiki atas biaya Kontraktor.\n7. Perubahan pekerjaan hanya sah bila disetujui secara tertulis oleh Pemberi Tugas dan Perencana.", "div": {"pekerjaan persiapan": {"l": "Pembersihan lokasi, pengukuran dan pemasangan bouwplank, pembuatan direksi keet dan gudang, penyediaan air dan listrik kerja, serta pengamanan lokasi selama pekerjaan berlangsung.", "b": "Papan atau kayu untuk bouwplank dan bangunan sementara dalam kondisi baik, lurus, dan kuat. Bahan bangunan sementara boleh bekas selama masih layak.", "p": "Titik dan elevasi acuan ditentukan bersama Pengawas sebelum pekerjaan lain dimulai. Bouwplank dipasang rata, kuat, dan diberi tanda as bangunan. Lokasi dibersihkan dari sampah dan sisa bahan secara berkala."}, "pekerjaan tanah": {"l": "Galian tanah pondasi dan saluran, urugan kembali, urugan pasir, pemadatan, serta pembuangan sisa tanah.", "b": "Pasir urug bersih, bebas lumpur, sampah, dan bahan organik. Tanah urugan bebas dari akar, sampah, dan tanah lunak.", "p": "Galian mengikuti gambar dengan kedalaman dan lebar sesuai ketentuan, dasar galian rata dan padat. Urugan dipadatkan lapis demi lapis. Galian dijaga dari genangan air, dan tanah sisa dibuang ke tempat yang disetujui Pengawas."}, "pekerjaan pondasi": {"l": "Pondasi, sloof, kolom, balok, dan elemen beton bertulang lain, lengkap dengan bekisting, pembesian, pengecoran, dan perawatan beton.", "b": "Semen, pasir, kerikil, dan air bersih sesuai standar. Baja tulangan sesuai gambar struktur dan bebas karat lepas, minyak, atau lumpur. Mutu beton sesuai gambar struktur.", "p": "Bekisting kuat, rapat, dan sesuai ukuran. Pembesian dipasang sesuai gambar dengan selimut beton yang cukup. Pengecoran dilakukan setelah diperiksa dan disetujui Pengawas, dipadatkan, lalu dirawat dengan dibasahi minimal 7 hari. Bekisting dibongkar setelah beton cukup umur."}, "pekerjaan kayu": {"l": "Pekerjaan konstruksi dan finishing yang memakai kayu, seperti rangka atap kayu, kusen kayu, dan list, sesuai gambar.", "b": "Kayu kering, lurus, tidak lapuk, tidak berlubang bekas serangga, dan bebas mata kayu besar. Kayu diberi pengawet bila dibutuhkan. Jenis dan kelas kayu sesuai gambar.", "p": "Sambungan rapat dan kuat dengan alat sambung sesuai gambar. Kayu tidak boleh terkena tanah atau air langsung tanpa perlindungan. Finishing dikerjakan setelah permukaan rata dan bersih."}, "pekerjaan dinding dan plesteran": {"l": "Pasangan dinding bata atau batako, kolom dan balok praktis, plesteran, acian, dan perapihan sudut.", "b": "Bata atau batako utuh, ukuran seragam, dan cukup keras. Semen dan pasir pasang bersih. Campuran spesi sesuai gambar atau petunjuk Pengawas.", "p": "Bata dibasahi sebelum dipasang, dipasang berikat, lurus, dan tegak (diperiksa dengan waterpass dan unting-unting). Dinding diikat ke kolom dengan angkur. Plesteran rata dan tidak retak, dan permukaan baru dirawat dengan dibasahi."}, "pekerjaan penutup lantai dinding": {"l": "Pemasangan keramik, granit, atau penutup lantai dan dinding lain, termasuk plint, nat, dan perapihan.", "b": "Penutup lantai dari satu batch, ukuran dan warna seragam, tanpa cacat. Perekat atau spesi sesuai jenis penutup. Contoh bahan dan warna disetujui Pemberi Tugas dan Perencana.", "p": "Permukaan dasar rata, bersih, dan kering. Pemasangan rata, lurus, nat seragam, dan tidak berongga (tidak berbunyi kosong saat diketuk). Pada area basah, kemiringan lantai ke arah saluran sesuai gambar. Nat dibersihkan dan diisi setelah perekat mengering."}, "pekerjaan penutup atap": {"l": "Penutup atap, rangka atap, bubungan, lisplang, talang, dan kelengkapan lain sesuai gambar.", "b": "Genteng, metal, atau penutup lain sesuai gambar, bebas cacat dan retak. Rangka baja ringan atau kayu sesuai gambar. Pengikat dan sekrup tahan karat.", "p": "Pemasangan lurus dengan tumpang tindih sesuai petunjuk pabrik, kemiringan sesuai gambar, dan tidak bocor. Pertemuan bubungan dan dinding diberi perlindungan kedap air. Atap diuji dengan siraman air bila diminta Pengawas."}, "pekerjaan plafond": {"l": "Rangka dan penutup plafond, list plafond, lubang pemeriksaan, dan perapihan.", "b": "Rangka hollow atau kayu sesuai gambar. Penutup gypsum, GRC, atau lainnya sesuai gambar, tidak melengkung dan tidak cacat.", "p": "Rangka dipasang rata dan kuat dengan penggantung sesuai jarak pada gambar. Sambungan papan ditutup dan diratakan. Plafond rata, bersih, dan siap dicat."}, "pekerjaan pengecatan": {"l": "Pengecatan dinding, plafond, kayu, dan besi, termasuk plamir, cat dasar, dan cat penutup.", "b": "Cat dan bahan pelapis dari merek dan warna yang disetujui, dalam kemasan asli yang tersegel. Pencampuran sesuai petunjuk pabrik.", "p": "Permukaan harus kering, bersih, dan rata sebelum dicat. Plamir dan cat dasar dikerjakan lebih dulu. Cat penutup minimal 2 lapis dengan jeda pengeringan sesuai petunjuk pabrik, hasil rata tanpa belang dan tetesan."}, "pekerjaan kusen pintu jendela": {"l": "Kusen, daun pintu, daun jendela, kaca, engsel, kunci, dan kelengkapan lain.", "b": "Kusen dan daun dari kayu, aluminium, atau bahan lain sesuai gambar, kering dan tidak melengkung. Kaca bebas gelembung dan goresan. Perangkat keras (engsel, kunci, handle) berkualitas baik.", "p": "Kusen dipasang tegak, rata, dan kuat dengan angkur ke dinding. Daun pintu dan jendela dapat dibuka tutup dengan lancar dan rapat. Celah antara kusen dan dinding ditutup rapi."}, "pekerjaan mekanikal elektrikal": {"l": "Instalasi listrik (kabel, saklar, stop kontak, titik lampu, panel) serta instalasi mekanikal lain sesuai gambar.", "b": "Kabel, pipa, saklar, stop kontak, dan MCB sesuai standar (SNI) dengan ukuran sesuai gambar. Armatur dan lampu sesuai daya dan jenis yang disetujui.", "p": "Pemasangan mengikuti PUIL dan gambar instalasi. Kabel dalam pipa, sambungan rapi dan terisolasi, serta diberi pembumian. Instalasi diuji sebelum serah terima, dan hasil pengujian dilaporkan kepada Pengawas."}, "pekerjaan sanitasi dan plumbing": {"l": "Instalasi air bersih, air kotor, dan air bekas, perlengkapan saniter (kloset, wastafel, kran, floor drain), serta septic tank dan resapan.", "b": "Pipa PVC atau jenis lain sesuai gambar dan tekanan kerja. Perlengkapan saniter dari satu merek, bebas cacat, dan sesuai contoh yang disetujui.", "p": "Pipa dipasang rapi, dengan kemiringan pipa air kotor sesuai gambar. Sambungan rapat dan diuji kebocoran serta aliran sebelum ditutup. Perlengkapan saniter dipasang kuat, rata, dan berfungsi baik."}, "pekerjaan interior dan aksesoris": {"l": "Furnitur built-in, lemari, meja, aksesoris ruangan, dan finishing interior sesuai gambar.", "b": "Bahan sesuai gambar interior (multipleks, HPL, kayu, kaca, dan lain-lain), bebas cacat. Contoh bahan dan warna disetujui Pemberi Tugas dan Perencana.", "p": "Dikerjakan rapi dengan ukuran dan detail sesuai gambar. Sambungan rapat, permukaan halus, dan perangkat keras (engsel, rel) berfungsi lancar. Hasil akhir bersih dan siap pakai."}}};
+  function stdDivisi() { return STD_DIV.map(function (n) { return { id: uid(), nama: n, items: [] }; }); }
+  /* Nomor divisi berupa huruf: A, B, ... Z, AA, AB, ... */
+  function huruf(n) { var s = ''; while (n > 0) { var r = (n - 1) % 26; s = String.fromCharCode(65 + r) + s; n = Math.floor((n - 1) / 26); } return s; }
+  /* judul, keterangan, contoh nama, satuan awal, kata untuk tombol tambah */
+  var KAT_STD = ['Material Utama', 'Material Besi dan Alumunium', 'Material Plumbing', 'Material Kelistrikan', 'Material Mekanikal', 'Material Lainnya'];
+  function guessKat(nama) {
+    var t = String(nama || '').toLowerCase();
+    if (/besi|baja|wiremesh|wire mesh|kawat|hollow|galvalum|aluminium|alumunium|siku|plat |plate|bendrat|paku baja|baut|angkur|roofing|rangka atap|reng|kanal c/.test(t)) return KAT_STD[1];
+    if (/pipa|pvc|kran|closet|kloset|wastafel|septic|septik|floor drain|elbow|tee |sok |shower|bak mandi|water heater|toren|tandon|talang/.test(t)) return KAT_STD[2];
+    if (/kabel|lampu|saklar|stop kontak|stopkontak|mcb|panel listrik|fitting|downlight|conduit|stek|titik listrik|grounding|nyy|nym/.test(t)) return KAT_STD[3];
+    if (/\bac\b|pompa|genset|lift|exhaust|ducting|chiller|hydrant|sprinkler|fan |kipas|escalator/.test(t)) return KAT_STD[4];
+    return KAT_STD[0];
+  }
+  /* Kategori material: daftar nama di S.katBahan, tiap material menyimpan nama kategorinya di kolom kat. */
+  function ensureKat(out) {
+    var list = Array.isArray(out.katBahan) ? out.katBahan.map(function (x) { return String(x || '').trim(); }).filter(Boolean) : [];
+    if (!list.length) list = KAT_STD.slice();
+    out.master.bahan.forEach(function (m) {
+      if (m.kat === undefined || m.kat === null) m.kat = guessKat(m.nama);
+      m.kat = String(m.kat);
+      if (m.kat && list.indexOf(m.kat) < 0) list.push(m.kat);
+    });
+    out.katBahan = list; return out;
+  }
+  var MT = {
+    upah: ['Upah', 'Harga dasar upah per satuan waktu (OH = orang hari). Perubahan harga di sini otomatis ikut ke semua AHSP yang memakainya.', 'mis. Tukang batu', 'OH', 'upah'],
+    bahan: ['Material', 'Harga dasar material per satuan. Perubahan harga di sini otomatis ikut ke semua AHSP yang memakainya.', 'mis. Semen portland', 'kg', 'material'],
+    alat: ['Sewa Alat', 'Harga sewa alat per jam atau per hari. Perubahan harga di sini otomatis ikut ke semua AHSP yang memakainya.', 'mis. Molen beton', 'jam', 'sewa alat']
+  };
+
+  var $ = function (s) { return document.querySelector(s); };
+  var uid = function () { return Math.random().toString(36).slice(2, 9) + Date.now().toString(36).slice(-3); };
+  var esc = function (s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); };
+  var rp = function (n) { return 'Rp ' + Math.round(n).toLocaleString('id-ID'); };
+  var num = function (n) { return (+n).toLocaleString('id-ID', { maximumFractionDigits: 4 }); };
+  var nf = function (n) { return String(Math.round(n * 10000) / 10000).replace('.', ','); };
+  function parse(s) {
+    s = String(s).trim().replace(/[^\d,.\-]/g, '').replace(/\./g, '').replace(',', '.');
+    var v = parseFloat(s);
+    return isFinite(v) ? v : 0;
+  }
+  function roman(n) {
+    var m = [[10, 'X'], [9, 'IX'], [5, 'V'], [4, 'IV'], [1, 'I']], r = '';
+    m.forEach(function (p) { while (n >= p[0]) { r += p[1]; n -= p[0]; } });
+    return r;
+  }
+  function terbilang(n) {
+    n = Math.floor(Math.abs(n));
+    if (n === 0) return 'nol rupiah';
+    var s = ['', 'satu', 'dua', 'tiga', 'empat', 'lima', 'enam', 'tujuh', 'delapan', 'sembilan', 'sepuluh', 'sebelas'];
+    function t(n) {
+      if (n < 12) return s[n];
+      if (n < 20) return t(n - 10) + ' belas';
+      if (n < 100) return t(Math.floor(n / 10)) + ' puluh' + (n % 10 ? ' ' + t(n % 10) : '');
+      if (n < 200) return 'seratus' + (n - 100 ? ' ' + t(n - 100) : '');
+      if (n < 1000) return t(Math.floor(n / 100)) + ' ratus' + (n % 100 ? ' ' + t(n % 100) : '');
+      if (n < 2000) return 'seribu' + (n - 1000 ? ' ' + t(n - 1000) : '');
+      if (n < 1e6) return t(Math.floor(n / 1e3)) + ' ribu' + (n % 1e3 ? ' ' + t(n % 1e3) : '');
+      if (n < 1e9) return t(Math.floor(n / 1e6)) + ' juta' + (n % 1e6 ? ' ' + t(n % 1e6) : '');
+      if (n < 1e12) return t(Math.floor(n / 1e9)) + ' miliar' + (n % 1e9 ? ' ' + t(n % 1e9) : '');
+      return t(Math.floor(n / 1e12)) + ' triliun' + (n % 1e12 ? ' ' + t(n % 1e12) : '');
+    }
+    return t(n) + ' rupiah';
+  }
+
+  /* ---------- data ---------- */
+  function mkKom(j, nama, satuan, koef, harga) { return { id: uid(), jenis: j, nama: nama, satuan: satuan, koef: koef, harga: harga, ref: '' }; }
+  function mkItem(u, sat, vol, harga, ahsp) { return { id: uid(), uraian: u, satuan: sat, volume: vol, harga: harga, ahsp: ahsp || '', mulai: 0, durasi: 0 }; }
+  function newProject(name) {
+    return { id: uid(), nama: name || 'Proyek baru', lokasi: '', jenis: '', pemilik: '', perencana: '', tahun: new Date().getFullYear(), luas: 0, ohp: 10, ppn: 11, minggu: 12, hrg: {},
+      divisi: stdDivisi() };
+  }
+  function sample() {
+    var galian = { id: uid(), div: STD_DIV[1], ohp: 10, kode: 'B.1', nama: 'Galian tanah biasa sedalam 1 m', satuan: 'm3', komponen: [
+      mkKom('upah', 'Pekerja', 'OH', 0.75, 130000), mkKom('upah', 'Mandor', 'OH', 0.025, 180000)] };
+    var bata = { id: uid(), div: STD_DIV[4], ohp: 10, kode: 'E.1', nama: 'Pasangan dinding bata merah 1Pc : 5Ps', satuan: 'm2', komponen: [
+      mkKom('bahan', 'Bata merah', 'bh', 70, 1200), mkKom('bahan', 'Semen portland', 'kg', 11.5, 1500), mkKom('bahan', 'Pasir pasang', 'm3', 0.043, 280000),
+      mkKom('upah', 'Pekerja', 'OH', 0.3, 130000), mkKom('upah', 'Tukang batu', 'OH', 0.1, 160000), mkKom('upah', 'Kepala tukang', 'OH', 0.01, 170000), mkKom('upah', 'Mandor', 'OH', 0.015, 180000)] };
+    var beton = { id: uid(), div: STD_DIV[2], ohp: 10, kode: 'C.1', nama: 'Beton mutu K-225 (campur manual)', satuan: 'm3', komponen: [
+      mkKom('bahan', 'Semen portland', 'kg', 371, 1500), mkKom('bahan', 'Pasir beton', 'kg', 698, 200), mkKom('bahan', 'Kerikil / split', 'kg', 1047, 250), mkKom('bahan', 'Air', 'L', 215, 50),
+      mkKom('upah', 'Pekerja', 'OH', 1.65, 130000), mkKom('upah', 'Tukang batu', 'OH', 0.275, 160000), mkKom('upah', 'Kepala tukang', 'OH', 0.028, 170000), mkKom('upah', 'Mandor', 'OH', 0.083, 180000),
+      mkKom('alat', 'Molen beton sewa', 'jam', 0.4, 75000)] };
+    var bersih = { id: uid(), div: STD_DIV[0], ohp: 10, kode: 'A.1', nama: 'Pembersihan lokasi', satuan: 'm2', komponen: [
+      mkKom('upah', 'Pekerja', 'OH', 0.1, 130000), mkKom('upah', 'Mandor', 'OH', 0.005, 180000)] };
+    var bowplank = { id: uid(), div: STD_DIV[0], ohp: 10, kode: 'A.2', nama: 'Pemasangan bouwplank', satuan: 'm\'', komponen: [
+      mkKom('bahan', 'Kayu papan 3/20', 'm3', 0.02, 3200000), mkKom('upah', 'Pekerja', 'OH', 0.1, 130000), mkKom('upah', 'Tukang kayu', 'OH', 0.1, 160000)] };
+    var keet = { id: uid(), div: STD_DIV[0], ohp: 10, kode: 'A.3', nama: 'Direksi keet dan gudang', satuan: 'ls', komponen: [
+      mkKom('bahan', 'Material bangunan sementara', 'ls', 1, 5000000), mkKom('upah', 'Pekerja', 'OH', 5, 130000), mkKom('upah', 'Tukang kayu', 'OH', 5, 160000)] };
+    var p = newProject('Rumah Tinggal 2 Lantai (contoh)');
+    p.contoh = true; p.lokasi = 'Isi lokasi proyek'; p.luas = 120;
+    p.divisi = [
+      { id: uid(), nama: 'Pekerjaan Persiapan', items: [
+        mkItem(bersih.nama, 'm2', 150, 0, bersih.id), mkItem(bowplank.nama, 'm\'', 50, 0, bowplank.id), mkItem(keet.nama, 'ls', 1, 0, keet.id)] },
+      { id: uid(), nama: 'Pekerjaan Tanah dan Pondasi', items: [
+        mkItem(galian.nama, 'm3', 28, 0, galian.id), mkItem(beton.nama, 'm3', 12, 0, beton.id)] },
+      { id: uid(), nama: 'Pekerjaan Dinding', items: [
+        mkItem(bata.nama, 'm2', 260, 0, bata.id)] }
+    ];
+    restructure(p);
+    return ensureKat(migrate({ v: 6, updatedAt: 0, activeId: p.id, ahspDiv: STD_DIV.map(function (n) { return { id: uid(), nama: n }; }), ahsp: [bersih, bowplank, keet, galian, bata, beton], projects: [p] }));
+  }
+  /* Proyek contoh versi lama (3 divisi) dipindah ke susunan standar A sampai M, semua item tetap ada. */
+  var OLD_DIV = ['Pekerjaan Persiapan', 'Pekerjaan Tanah dan Pondasi', 'Pekerjaan Dinding'];
+  /* Susunan standar versi sebelumnya (13 divisi, belum ada Besi dan Kayu). */
+  var OLD_STD13 = ['Pekerjaan Persiapan', 'Pekerjaan Tanah', 'Pekerjaan Pondasi', 'Pekerjaan Beton', 'Pekerjaan Dinding dan Plesteran',
+    'Pekerjaan Penutup Lantai Dinding', 'Pekerjaan Penutup Atap', 'Pekerjaan Plafond', 'Pekerjaan Pengecatan', 'Pekerjaan Kusen Pintu Jendela',
+    'Pekerjaan Mekanikal Elektrikal', 'Pekerjaan Sanitasi dan Plumbing', 'Pekerjaan Interior dan Aksesoris'];
+  /* Susunan standar versi 3 (15 divisi), dipakai untuk memindahkan data lama ke susunan 13 divisi. */
+  var OLD_STD15 = ['Pekerjaan Persiapan', 'Pekerjaan Tanah', 'Pekerjaan Pondasi', 'Pekerjaan Beton', 'Pekerjaan Besi', 'Pekerjaan Kayu', 'Pekerjaan Dinding dan Plesteran',
+    'Pekerjaan Penutup Lantai Dinding', 'Pekerjaan Penutup Atap', 'Pekerjaan Plafond', 'Pekerjaan Pengecatan', 'Pekerjaan Kusen Pintu Jendela',
+    'Pekerjaan Mekanikal Elektrikal', 'Pekerjaan Sanitasi dan Plumbing', 'Pekerjaan Interior dan Aksesoris'];
+  /* Proyek yang belum punya Pekerjaan Besi dan Pekerjaan Kayu mendapatkannya (setelah Beton), item tidak berubah. */
+  function ensureBesiKayu(p) {
+    var at = function (n) { for (var i = 0; i < p.divisi.length; i++) { if (p.divisi[i].nama.trim().toLowerCase() === n.toLowerCase()) return i; } return -1; };
+    ['Pekerjaan Besi', 'Pekerjaan Kayu'].forEach(function (n, k) {
+      if (at(n) >= 0) return;
+      var pos = k === 0 ? at('Pekerjaan Beton') : Math.max(at('Pekerjaan Besi'), at('Pekerjaan Beton'));
+      p.divisi.splice(pos >= 0 ? pos + 1 : p.divisi.length, 0, { id: uid(), nama: n, items: [] });
+    });
+  }
+  /* Proyek dengan 13 divisi standar lama mendapat Pekerjaan Besi dan Pekerjaan Kayu, item tidak berubah. */
+  function upgradeStd(p) {
+    if (p.divisi.length !== 13 || p.divisi.some(function (d, i) { return d.nama.trim() !== OLD_STD13[i]; })) return;
+    p.divisi.splice(4, 0, { id: uid(), nama: 'Pekerjaan Besi', items: [] }, { id: uid(), nama: 'Pekerjaan Kayu', items: [] });
+  }
+  function restructure(p) {
+    if (!p.contoh || p.divisi.length !== 3 || p.divisi.some(function (d, i) { return d.nama !== OLD_DIV[i]; })) return;
+    var nd = stdDivisi(), o = p.divisi;
+    nd[0].items = o[0].items;
+    o[1].items.forEach(function (it) { (/galian|urug|tanah/i.test(it.uraian) ? nd[1] : nd[2]).items.push(it); });
+    nd[4].items = o[2].items;
+    p.divisi = nd;
+  }
+  /* Bentuk daftar Upah / Material / Sewa Alat dari komponen AHSP yang sudah ada, tanpa mengubah harga. */
+  function migrate(out) {
+    out.master = { upah: [], bahan: [], alat: [] };
+    var seen = {};
+    out.ahsp.forEach(function (a) {
+      a.komponen.forEach(function (k) {
+        if (!k.nama) return;
+        var key = k.jenis + '|' + k.nama + '|' + k.satuan + '|' + k.harga;
+        if (!seen[key]) { seen[key] = { id: uid(), nama: k.nama, satuan: k.satuan, harga: k.harga }; out.master[k.jenis].push(seen[key]); }
+        k.ref = seen[key].id;
+      });
+    });
+    out.master.upah = sortUpah(out.master.upah);
+    return out;
+  }
+  /* Tebakan divisi untuk AHSP lama yang belum punya divisi, dari kata kunci pada namanya. */
+  var DIV_KEYS = [
+    [0, /bouwplank|pembersihan|direksi|persiapan|pagar sementara/i],
+    [1, /galian|urugan|urug|tanah|pemadatan/i],
+    [2, /pondasi|batu kali|batu belah|aanstamping|cakar ayam|tiang pancang/i],
+    [3, /beton|bekisting|pembesian|sloof|kolom|balok|plat lantai|ring balk|besi tulangan/i],
+    [4, /bata|batako|hebel|plester|acian|\baci\b|dinding|roster/i],
+    [5, /keramik|granit|marmer|lantai|homogenous|plint/i],
+    [6, /atap|genteng|baja ringan|bubungan|talang/i],
+    [7, /plafon|plafond|gypsum|kalsiboard/i],
+    [8, /\bcat\b|pengecatan|plamir|politur/i],
+    [9, /kusen|pintu|jendela|kaca|engsel|rolling door/i],
+    [10, /listrik|kabel|lampu|saklar|stop kontak|\bmcb\b|instalasi|\bac\b|cctv|grounding|genset/i],
+    [11, /pipa|closet|kloset|wastafel|septic|septik|sanitasi|kran|plumbing|floor drain|bak mandi|resapan/i],
+    [12, /interior|lemari|kitchen|furniture|railing|aksesoris|handrail|partisi|gorden/i]
+  ];
+  function guessDiv(nama) {
+    for (var i = 0; i < DIV_KEYS.length; i++) { if (DIV_KEYS[i][1].test(nama || '')) { var gd = OLD_STD13[DIV_KEYS[i][0]]; return gd === 'Pekerjaan Beton' ? '' : gd; } }
+    if (/baja|wiremesh|wire mesh|hollow|\bwf\b|kanopi|teralis|kisi|\bbesi\b/i.test(nama || '')) return '';
+    if (/kayu|multipleks|triplek|plywood|kaso|\breng\b|usuk|papan|parket|decking|lisplank/i.test(nama || '')) return 'Pekerjaan Kayu';
+    return '';
+  }
+  function normDiv(a) {
+    if (a.div !== undefined) return String(a.div || '');
+    return guessDiv(a.nama);
+  }
+  function norm(d) {
+    if (!d || !Array.isArray(d.projects) || !d.projects.length) throw new Error('bad');
+    var n = function (x) { x = +x; return isFinite(x) ? x : 0; };
+    var ver = +d.v || 1;
+    var out = { v: 6, updatedAt: n(d.updatedAt), activeId: d.activeId, ahsp: [], projects: [] };
+    (d.ahsp || []).forEach(function (a) {
+      out.ahsp.push({ id: a.id || uid(), _new: a.div === undefined, div: normDiv(a), ohp: a.ohp === undefined ? n(d.projects[0] && d.projects[0].ohp) : n(a.ohp), kode: String(a.kode || ''), nama: String(a.nama || ''), satuan: String(a.satuan || ''),
+        komponen: (a.komponen || []).map(function (k) { return { id: k.id || uid(), jenis: JENIS[k.jenis] ? k.jenis : 'bahan', nama: String(k.nama || ''), satuan: String(k.satuan || ''), koef: n(k.koef), harga: n(k.harga), ref: k.ref || '' }; }) });
+    });
+    d.projects.forEach(function (p) {
+      out.projects.push({ id: p.id || uid(), nama: String(p.nama || ''), lokasi: String(p.lokasi || ''), jenis: String(p.jenis || ''), rksUmum: String(p.rksUmum || ''), pemilik: String(p.pemilik || ''), perencana: String(p.perencana || ''), tahun: n(p.tahun) || new Date().getFullYear(),
+        luas: n(p.luas), ohp: n(p.ohp), ppn: n(p.ppn), minggu: n(p.minggu) >= 1 ? Math.round(n(p.minggu)) : 12, contoh: !!p.contoh,
+        hrg: (function (h) { var o = {}; if (h && typeof h === 'object') Object.keys(h).forEach(function (k) { if (isFinite(h[k]) && h[k] !== null && h[k] !== '') o[k] = n(h[k]); }); return o; })(p.hrg),
+        divisi: (p.divisi || []).map(function (v) {
+          return { id: v.id || uid(), nama: String(v.nama || ''), rksLingkup: String(v.rksLingkup || ''), rksBahan: String(v.rksBahan || ''), rksLaksana: String(v.rksLaksana || ''), items: (v.items || []).map(function (i) {
+            return { id: i.id || uid(), uraian: String(i.uraian || ''), satuan: String(i.satuan || ''), volume: n(i.volume), harga: n(i.harga), ahsp: i.ahsp || '', mulai: Math.max(0, Math.round(n(i.mulai))), durasi: Math.max(0, Math.round(n(i.durasi))) }; }) };
+        }) });
+    });
+    if (!out.projects.some(function (p) { return p.id === out.activeId; })) out.activeId = out.projects[0].id;
+    var cnts = {};
+    out.ahsp.forEach(function (a) {
+      if (a._new) {
+        var gi = STD_DIV.indexOf(a.div);
+        if (gi >= 0 && /^A\.\d+$/.test(a.kode)) { cnts[gi] = (cnts[gi] || 0) + 1; a.kode = huruf(gi + 1) + '.' + cnts[gi]; }
+      }
+      delete a._new;
+    });
+    out.projects.forEach(restructure);
+    if (ver < 3) out.projects.forEach(ensureBesiKayu);
+    if (ver < 2) {
+      out.projects.forEach(upgradeStd);
+      out.ahsp.forEach(function (a) {
+        if (!a.div) a.div = guessDiv(a.nama);
+        var oi = OLD_STD13.indexOf(a.div), ni = STD_DIV.indexOf(a.div);
+        if (oi >= 0 && ni >= 0 && oi !== ni) {
+          var m = /^([A-Z]{1,2})\.(\d+)$/.exec(a.kode);
+          if (m && m[1] === huruf(oi + 1)) a.kode = huruf(ni + 1) + '.' + m[2];
+        }
+      });
+    }
+    /* Versi 4: divisi Beton dan Besi dihapus dari susunan standar. Divisi kosong dihapus, divisi berisi tetap dipertahankan. */
+    if (ver < 4) {
+      var GONE = { 'pekerjaan beton': 'Pekerjaan Pondasi', 'pekerjaan besi': '' };
+      var isGone = function (nm) { return Object.prototype.hasOwnProperty.call(GONE, String(nm || '').trim().toLowerCase()); };
+      out.projects.forEach(function (p) { p.divisi = p.divisi.filter(function (dv) { return dv.items.length || !isGone(dv.nama); }); });
+      out.ahsp.forEach(function (a) {
+        var od = (a.div || '').trim(), nd = isGone(od) ? GONE[od.toLowerCase()] : od;
+        var m = /^([A-Z]{1,2})\.(\d+)$/.exec(a.kode), oi = OLD_STD15.indexOf(od), ni = STD_DIV.indexOf(nd);
+        a.div = nd;
+        if (m && oi >= 0 && ni >= 0 && m[1] === huruf(oi + 1)) a.kode = huruf(ni + 1) + '.' + m[2];
+      });
+    }
+    if (d.master && typeof d.master === 'object') {
+      out.master = {};
+      Object.keys(JENIS).forEach(function (j) {
+        out.master[j] = (d.master[j] || []).map(function (m) { return { id: m.id || uid(), nama: String(m.nama || ''), satuan: String(m.satuan || ''), harga: n(m.harga), kat: m.kat }; });
+      });
+      out.katBahan = d.katBahan;
+      out.ahsp.forEach(function (a) { a.komponen.forEach(function (k) { if (k.ref && !masterById(k.ref, out)) k.ref = ''; }); });
+    } else migrate(out);
+    /* Urutan upah standar (mandor, kepala tukang, tukang, pekerja) dipakai sekali sebagai urutan awal. Setelah itu urutannya diatur sendiri. */
+    if (ver < 5) out.master.upah = sortUpah(out.master.upah);
+    /* Versi 6: daftar divisi AHSP berdiri sendiri. Data lama memakai divisi proyek aktif dan nama divisi AHSP sebagai daftar awal. */
+    if (Array.isArray(d.ahspDiv)) {
+      out.ahspDiv = d.ahspDiv.map(function (x) { return { id: x.id || uid(), nama: String(x.nama || '') }; });
+    } else {
+      var act0 = out.projects.filter(function (p) { return p.id === out.activeId; })[0] || out.projects[0];
+      var names = [], seenN = {};
+      var addN = function (nm) { nm = String(nm || '').trim(); var l = nm.toLowerCase(); if (nm && !seenN[l]) { seenN[l] = 1; names.push(nm); } };
+      act0.divisi.forEach(function (v) { addN(v.nama); });
+      out.ahsp.forEach(function (a) { addN(a.div); });
+      if (!names.length) STD_DIV.forEach(addN);
+      out.ahspDiv = names.map(function (nm) { return { id: uid(), nama: nm }; });
+    }
+    ensureKat(out);
+    return out;
+  }
+
+  var S, tab = 'proyek', remote = null, status = '', openAhsp = {}, grpState = {}, rabOpen = {};
+  function ap() { return S.projects.filter(function (p) { return p.id === S.activeId; })[0] || S.projects[0]; }
+  var ZERO_I = { volume: 0, harga: 0, ahsp: '' }, ZERO_D = { items: [] };
+  /* AHSP yang benar-benar dipakai oleh item pekerjaan di RAB proyek ini (untuk lampiran PDF dan Excel). */
+  function ahspPakai(p) {
+    var used = {}; p.divisi.forEach(function (d) { d.items.forEach(function (i) { if (i.ahsp) used[i.ahsp] = 1; }); });
+    return S.ahsp.filter(function (a) { return used[a.id]; });
+  }
+  function ahspById(id) { return S.ahsp.filter(function (a) { return a.id === id; })[0]; }
+  function masterById(id, st) {
+    st = st || S;
+    var ks = Object.keys(JENIS);
+    for (var i = 0; i < ks.length; i++) { var f = st.master[ks[i]].filter(function (m) { return m.id === id; })[0]; if (f) return f; }
+  }
+  /* Harga upah, material dan sewa alat disimpan per proyek (p.hrg = {id: harga}); tanpa isian khusus dipakai harga dasar di daftar. */
+  var CTX = null;
+  function ctxP() { return CTX || ap(); }
+  function withCtx(p, fn) { var prev = CTX; CTX = p; try { return fn(); } finally { CTX = prev; } }
+  function hargaM(m, p) { p = p || ctxP(); return p && p.hrg && p.hrg[m.id] !== undefined ? p.hrg[m.id] : m.harga; }
+  function hargaMap(p) { var o = {}; Object.keys(JENIS).forEach(function (j) { S.master[j].forEach(function (m) { o[m.id] = hargaM(m, p); }); }); return o; }
+  function komHarga(k) { var m = k.ref ? masterById(k.ref) : null; return m ? hargaM(m) : k.harga; }
+  /* Jumlah upah + material + sewa alat per satuan, sebelum overhead. */
+  function ahspBase(a) { return a ? Math.round(a.komponen.reduce(function (s, k) { return s + k.koef * komHarga(k); }, 0)) : 0; }
+  function ahspOhp(a) { return a ? Math.round(ahspBase(a) * (a.ohp || 0) / 100) : 0; }
+  /* Harga satuan AHSP = jumlah komponen + overhead. */
+  function ahspPrice(a) { return a ? ahspBase(a) + ahspOhp(a) : 0; }
+  function ahspJenis(a, j) { return Math.round(a.komponen.filter(function (k) { return k.jenis === j; }).reduce(function (s, k) { return s + k.koef * komHarga(k); }, 0)); }
+  function itemPrice(it) { var a = it.ahsp ? ahspById(it.ahsp) : null; return a ? ahspPrice(a) : it.harga; }
+  /* Uraian dan satuan item mengikuti AHSP yang dipilih, jadi berubah otomatis kalau AHSP diganti namanya. */
+  function itemUraian(it) { var a = it.ahsp ? ahspById(it.ahsp) : null; return a ? a.nama : it.uraian; }
+  function itemSatuan(it) { var a = it.ahsp ? ahspById(it.ahsp) : null; return a ? a.satuan : it.satuan; }
+  function itemTotal(it) { return Math.round(it.volume * itemPrice(it)); }
+  function divTotal(d) { return d.items.reduce(function (s, i) { return s + itemTotal(i); }, 0); }
+  function projCalc(p) { return withCtx(p, function () { return projCalc0(p); }); }
+  function projCalc0(p) {
+    var sub = p.divisi.reduce(function (s, d) { return s + divTotal(d); }, 0);
+    var ohp = 0, dasar = sub, ppn = Math.round(dasar * p.ppn / 100), total = dasar + ppn;
+    return { sub: sub, ohp: ohp, dasar: dasar, ppn: ppn, total: total, bulat: Math.round(total / 1000) * 1000 };
+  }
+  function findDiv(p, id) { return p.divisi.filter(function (d) { return d.id === id; })[0]; }
+  function findItem(p, id) { for (var i = 0; i < p.divisi.length; i++) { var f = p.divisi[i].items.filter(function (x) { return x.id === id; })[0]; if (f) return f; } }
+  function findKom(id) { for (var i = 0; i < S.ahsp.length; i++) { var f = S.ahsp[i].komponen.filter(function (x) { return x.id === id; })[0]; if (f) return f; } }
+  function find(type, id) {
+    if (type === 'proj') return S.projects.filter(function (p) { return p.id === id; })[0];
+    if (type === 'div') return findDiv(ap(), id);
+    if (type === 'adiv') return findAdiv(id);
+    if (type === 'item') return findItem(ap(), id);
+    if (type === 'ahsp') return ahspById(id);
+    if (type === 'kom') return findKom(id);
+    if (type === 'mst') return masterById(id);
+  }
+
+  /* ---------- persistence ---------- */
+  var saveTimer = null, saving = false, pending = false;
+  function touch() { S.updatedAt = Date.now(); persist(); }
+  function localSave() { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) { } }
+  function setStatus(msg) {
+    status = msg || (remote ? 'Tersimpan otomatis di akun Claude Anda dan di HP ini.' : 'Tersimpan otomatis di HP ini. Buat cadangan berkala.');
+    var el = $('#status'); if (el) el.textContent = status;
+  }
+  function persist() { clearTimeout(saveTimer); setStatus('Menyimpan...'); saveTimer = setTimeout(doSave, 600); }
+  function doSave() {
+    localSave();
+    if (!remote) { setStatus(); return; }
+    if (saving) { pending = true; return; }
+    saving = true;
+    remote.set(JSON.parse(JSON.stringify(S))).then(function () { setStatus(); }, function () { setStatus('Tersimpan di HP ini. Penyimpanan akun gagal, coba lagi nanti.'); })
+      .then(function () { saving = false; if (pending) { pending = false; doSave(); } });
+  }
+  function loadLocal() { try { var r = localStorage.getItem(KEY); return r ? norm(JSON.parse(r)) : null; } catch (e) { return null; } }
+  async function connectRemote() {
+    try {
+      if (!(window.claude && window.claude.use)) return;
+      var db = await window.claude.use('db'), user = await window.claude.use('user');
+      if (!db || !user) return;
+      var id = await user.id(); if (!id) return;
+      var ref = db.collection('data/users/' + id).doc('rab');
+      var snap = await ref.get();
+      remote = ref;
+      if (snap.exists) {
+        var d = JSON.parse(JSON.stringify(snap.data()));
+        if ((d.updatedAt || 0) >= (S.updatedAt || 0)) { S = norm(d); localSave(); render(); }
+        else persist();
+      } else if (S.updatedAt) persist();
+      setStatus();
+    } catch (e) { /* tetap lokal */ }
+  }
+
+  /* ---------- views ---------- */
+  function fld(label, t, id, f, val, o) {
+    o = o || {};
+    var v = o.plain ? (val || '') : o.n ? (val === 0 ? '' : num(val)) : val;
+    return '<label class="fld"' + (o.cls ? ' style="' + o.cls + '"' : '') + '><span>' + label + '</span><input id="' + t + '-' + id + '-' + f + '" data-t="' + t + '" data-id="' + id + '" data-f="' + f + '"' +
+      (o.plain ? ' data-n="1" data-plain="1" inputmode="numeric" placeholder="2026"' : o.n ? ' data-n="1" inputmode="decimal" placeholder="0"' : '') + (o.ph ? ' placeholder="' + esc(o.ph) + '"' : '') + ' autocomplete="off" value="' + esc(v) + '"></label>';
+  }
+  function viewProyek() {
+    var p = ap();
+    var list = S.projects.map(function (q) {
+      return '<div class="prow"><button class="pcard" data-act="sel-proj" data-id="' + q.id + '"' + (q.id === p.id ? ' aria-current="true"' : '') + '><span style="min-width:0"><span class="pn">' + esc(q.nama || 'Tanpa nama') + '</span><br><span class="pl">' + esc(q.lokasi || 'Lokasi belum diisi') + '</span></span><span class="pt" data-k="proj:' + q.id + '"></span></button>' +
+        '<button class="btn small ghost" data-act="del-proj" data-id="' + q.id + '" data-danger="1" aria-label="Hapus proyek ' + esc(q.nama || 'tanpa nama') + '"' + (S.projects.length < 2 ? ' disabled' : '') + '>Hapus</button></div>';
+    }).join('');
+    return '<h2>Proyek</h2>' +
+      (p.contoh ? '<div class="note">Proyek pertama ini berisi data contoh dengan harga bayangan, supaya Anda bisa melihat cara kerjanya. Ganti nama proyek untuk menandainya sebagai milik Anda, atau buat proyek baru.</div>' : '') +
+      '<div class="sheet"><h3>Daftar proyek</h3><div class="plist">' + list + '</div>' +
+      '<div class="row"><button class="btn primary" data-act="new-proj">Proyek baru</button><button class="btn" data-act="dup-proj">Duplikat</button></div></div>' +
+      '<div class="sheet"><h3>Data proyek aktif</h3>' +
+      fld('Nama proyek', 'proj', p.id, 'nama', p.nama) + fld('Jenis bangunan', 'proj', p.id, 'jenis', p.jenis, { ph: 'mis. Rumah tinggal 2 lantai' }) + fld('Lokasi', 'proj', p.id, 'lokasi', p.lokasi) + fld('Pemberi tugas', 'proj', p.id, 'pemilik', p.pemilik) + fld('Perencana', 'proj', p.id, 'perencana', p.perencana) +
+      '<div class="g2">' + fld('Tahun anggaran', 'proj', p.id, 'tahun', p.tahun, { plain: true }) + fld('Luas bangunan (m2)', 'proj', p.id, 'luas', p.luas, { n: true }) + '</div>' +
+      '<div class="g2">' + fld('PPN (%)', 'proj', p.id, 'ppn', p.ppn, { n: true }) + '<span></span></div>' +
+      '<p class="hint">Tulis desimal dengan koma, misalnya 0,25. Titik dibaca sebagai pemisah ribuan.</p>' +
+      '</div>' +
+      '<div class="sheet"><h3>Penyimpanan dan cadangan</h3><p class="hint" id="status">' + esc(status) + '</p>' +
+      '<p class="hint">Perpustakaan (Upah, Material, Sewa Alat, dan AHSP) dipakai bersama oleh semua proyek dan otomatis ikut ke proyek baru, jadi tidak perlu ditulis ulang.</p>' +
+      '<div class="row"><button class="btn" data-act="export-json">Simpan cadangan (.json)</button><button class="btn" data-act="import-json" data-danger="1">Buka cadangan</button></div></div>' +
+      '<div class="sheet"><h3>Bagikan</h3><p class="hint">Untuk proyek aktif: <b data-k="pname"></b></p>' + pickHTML() + '<div class="row" style="margin-top:10px"><button class="btn primary" data-act="export-html">Bagikan (.html)</button><button class="btn" data-act="export-pdf">Simpan RAB (.pdf)</button><button class="btn" data-act="export-xlsx">Simpan RAB (.xlsx untuk Excel)</button><button class="btn" data-act="copy-sum">Salin ringkasan</button></div>' +
+      '<div id="copy-area"></div><p class="hint">File .csv dibuka langsung di Excel atau Google Sheets. Untuk PDF, buka file itu lalu cetak dari aplikasi spreadsheet.</p></div>';
+  }
+  /* Daftar divisi AHSP berdiri sendiri (perpustakaan AHSP). Tidak terhubung dengan divisi di tab RAB dan Rekap. */
+  function findAdiv(id) { return S.ahspDiv.filter(function (d) { return d.id === id; })[0]; }
+  function ahspBuckets() {
+    var first = {};
+    S.ahspDiv.forEach(function (d, i) { var k = d.nama.trim(); if (first[k] === undefined) first[k] = i; });
+    var groups = S.ahspDiv.map(function (d, i) { return { id: d.id, huruf: huruf(i + 1), nama: d.nama.trim() || 'Tanpa nama', list: [] }; });
+    var rest = [];
+    S.ahsp.forEach(function (a) {
+      var k = (a.div || '').trim();
+      if (k !== '' && first[k] !== undefined) groups[first[k]].list.push(a); else rest.push(a);
+    });
+    return { groups: groups, rest: rest };
+  }
+  /* Pilihan AHSP untuk item RAB, dikelompokkan menurut divisi di tab AHSP. */
+  function ahspOptions(sel, placeholder) {
+    var opt = function (a) { return '<option value="' + a.id + '"' + (a.id === sel ? ' selected' : '') + '>' + esc((a.kode ? a.kode + ' ' : '') + (a.nama || 'AHSP tanpa nama')) + '</option>'; };
+    var b = ahspBuckets(), out = '<option value="">' + esc(placeholder || 'Pilih AHSP') + '</option>';
+    b.groups.forEach(function (g) { if (g.list.length) out += '<optgroup label="' + esc(g.nama) + '">' + g.list.map(opt).join('') + '</optgroup>'; });
+    if (b.rest.length) out += '<optgroup label="Belum dikelompokkan">' + b.rest.map(opt).join('') + '</optgroup>';
+    return out;
+  }
+  function divSel(a) {
+    var ds = S.ahspDiv, cur = (a.div || '').trim();
+    var known = cur === '' || ds.some(function (d) { return d.nama.trim() === cur; });
+    var opts = ds.map(function (d) { return '<option value="' + esc(d.nama) + '"' + (cur !== '' && d.nama.trim() === cur ? ' selected' : '') + '>' + esc(d.nama.trim() || 'Tanpa nama') + '</option>'; }).join('');
+    var extra = known ? '' : '<option value="' + esc(a.div) + '" selected>' + esc(cur) + ' (divisi sudah dihapus)</option>';
+    return '<label class="fld"><span>Divisi</span><select id="ahsp-' + a.id + '-div" data-t="ahsp" data-id="' + a.id + '" data-f="div"><option value=""' + (cur === '' ? ' selected' : '') + '>Belum dikelompokkan</option>' + opts + extra + '</select></label>';
+  }
+  /* Daftar AHSP per divisi AHSP. Setiap divisi bisa dibuka dan ditutup. */
+  function ahspGroups(cardFn) {
+    var b = ahspBuckets();
+    var box = function (gid, label, list, open, addId) {
+      return '<details class="grp nonum" data-gid="' + gid + '"' + (open ? ' open' : '') + '><summary><span class="g-name">' + esc(label) + '</span><span class="g-count">' + list.length + ' AHSP</span></summary>' +
+        '<div class="grp-body">' + (list.map(cardFn).join('') || '<p class="hint">Belum ada AHSP di divisi ini.</p>') +
+        (addId ? '<button class="btn small primary" data-act="add-ahsp" data-id="' + addId + '">+ Tambah AHSP di divisi ini</button>' : '') + '</div></details>';
+    };
+    var html = b.groups.map(function (g) {
+      var gid = 'g' + g.id;
+      return box(gid, g.nama, g.list, !!grpState[gid], g.id);
+    });
+    if (b.rest.length) html.push(box('x', 'Belum dikelompokkan atau divisinya sudah dihapus', b.rest, !!grpState.x, ''));
+    return html.join('');
+  }
+  /* Pilihan nama divisi untuk tab RAB: diambil dari daftar divisi di tab AHSP. Nama yang sudah dipakai divisi lain tidak bisa dipilih. */
+  function divPickOptions(d) {
+    var used = {}, seen = {}, cur = d.nama.trim().toLowerCase(), names = [];
+    ap().divisi.forEach(function (v) { if (v.id !== d.id) used[v.nama.trim().toLowerCase()] = 1; });
+    var add = function (n) { n = String(n || '').trim(); var l = n.toLowerCase(); if (n && !seen[l]) { seen[l] = 1; names.push(n); } };
+    add(d.nama);
+    S.ahspDiv.forEach(function (v) { add(v.nama); });
+    var opt = function (n) {
+      var l = n.toLowerCase(), u = used[l], sel = l === cur;
+      return '<option value="' + esc(n) + '"' + (sel ? ' selected' : '') + (u ? ' disabled' : '') + '>' + esc(n) + (u ? ' (sudah dipakai)' : '') + '</option>';
+    };
+    return '<select id="div-' + d.id + '-nama" class="div-name" data-t="divpick" data-id="' + d.id + '" data-f="nama" aria-label="Nama divisi, pilih dari tab AHSP">' +
+      (cur ? '' : '<option value="" selected>Pilih nama divisi dari tab AHSP</option>') +
+      (names.length ? '<optgroup label="Nama divisi di tab AHSP">' + names.map(opt).join('') + '</optgroup>' : '') + '</select>';
+  }
+  /* Panel divisi proyek di tab RAB: menambah, menghapus, mengganti nama, mengurutkan. Tidak mengubah daftar divisi di tab AHSP. */
+  function divManager() {
+    var p = ap(), last = p.divisi.length - 1;
+    var rows = p.divisi.map(function (d, i) {
+      return '<div class="dm-row"><span class="roman">' + huruf(i + 1) + '</span>' +
+        '<label class="dm-name"><input id="dm-' + d.id + '" data-t="div" data-id="' + d.id + '" data-f="nama" value="' + esc(d.nama) + '" placeholder="Nama divisi" aria-label="Nama divisi ' + huruf(i + 1) + '" autocomplete="off">' +
+        '<small>' + (d.items.length ? d.items.length + ' item pekerjaan, ikut terhapus bila divisi dihapus' : 'Belum ada item') + '</small></label>' +
+        '<span class="mcard-act">' +
+        '<button class="btn small mv" data-act="mv-div" data-dir="-1" data-id="' + d.id + '" aria-label="Geser divisi ke atas"' + (i === 0 ? ' disabled' : '') + '>▲</button>' +
+        '<button class="btn small mv" data-act="mv-div" data-dir="1" data-id="' + d.id + '" aria-label="Geser divisi ke bawah"' + (i === last ? ' disabled' : '') + '>▼</button>' +
+        '<button class="btn small ghost" data-act="del-div" data-id="' + d.id + '" data-danger="1">Hapus</button></span></div>';
+    }).join('') || '<p class="hint">Belum ada divisi. Tambahkan divisi pertama di bawah.</p>';
+    return '<details class="grp" data-gid="dm"' + (grpState.dm ? ' open' : '') + '><summary><span class="roman">±</span><span class="g-name">Tambah atau hapus divisi</span><span class="g-count">' + p.divisi.length + ' divisi</span></summary>' +
+      '<div class="grp-body"><p class="hint">Perubahan di sini hanya berlaku di tab RAB dan Rekap proyek ini. Daftar divisi di tab AHSP tidak berubah.</p>' + rows +
+      '<label class="fld"><span>Divisi baru</span><input id="dm-new" placeholder="mis. Pekerjaan Baja" autocomplete="off"></label>' +
+      '<div class="row"><button class="btn primary" data-act="add-div">Tambah divisi</button><button class="btn" data-act="std-div">Lengkapi divisi standar</button></div></div></details>';
+  }
+  /* Panel divisi AHSP di tab AHSP. Tidak mengubah divisi di tab RAB dan Rekap. */
+  function ahspDivManager() {
+    var last = S.ahspDiv.length - 1, cnt = {};
+    S.ahsp.forEach(function (a) { var k = (a.div || '').trim(); cnt[k] = (cnt[k] || 0) + 1; });
+    var rows = S.ahspDiv.map(function (d, i) {
+      var n = cnt[d.nama.trim()] || 0;
+      return '<div class="dm-row nonum"><label class="dm-name"><input id="am-' + d.id + '" data-t="adiv" data-id="' + d.id + '" data-f="nama" value="' + esc(d.nama) + '" placeholder="Nama divisi AHSP" aria-label="Nama divisi AHSP" autocomplete="off">' +
+        '<small>' + (n ? n + ' AHSP. Bila divisi dihapus, AHSP-nya tetap tersimpan di Belum dikelompokkan' : 'Belum ada AHSP') + '</small></label>' +
+        '<span class="mcard-act">' +
+        '<button class="btn small mv" data-act="mv-adiv" data-dir="-1" data-id="' + d.id + '" aria-label="Geser divisi ke atas"' + (i === 0 ? ' disabled' : '') + '>▲</button>' +
+        '<button class="btn small mv" data-act="mv-adiv" data-dir="1" data-id="' + d.id + '" aria-label="Geser divisi ke bawah"' + (i === last ? ' disabled' : '') + '>▼</button>' +
+        '<button class="btn small ghost" data-act="del-adiv" data-id="' + d.id + '" data-danger="1">Hapus</button></span></div>';
+    }).join('') || '<p class="hint">Belum ada divisi AHSP. Tambahkan divisi pertama di bawah.</p>';
+    return '<details class="grp" data-gid="am"' + (grpState.am ? ' open' : '') + '><summary><span class="roman">±</span><span class="g-name">Tambah atau hapus divisi AHSP</span><span class="g-count">' + S.ahspDiv.length + ' divisi</span></summary>' +
+      '<div class="grp-body"><p class="hint">Daftar divisi ini adalah perpustakaan AHSP. Perubahan di sini tidak mengubah divisi di tab RAB dan Rekap.</p>' + rows +
+      '<label class="fld"><span>Divisi baru</span><input id="am-new" placeholder="mis. Pekerjaan Baja" autocomplete="off"></label>' +
+      '<div class="row"><button class="btn primary" data-act="add-adiv">Tambah divisi</button><button class="btn" data-act="std-adiv">Lengkapi divisi standar</button></div></div></details>';
+  }
+  /* Urutan upah: mandor, kepala tukang, tukang, pekerja, lainnya. */
+  function upahRank(nama) {
+    nama = String(nama || '').toLowerCase();
+    if (nama.indexOf('mandor') >= 0) return 0;
+    if (/kepala\s*tukang/.test(nama)) return 1;
+    if (nama.indexOf('tukang') >= 0) return 2;
+    if (nama.indexOf('pekerja') >= 0) return 3;
+    return 4;
+  }
+  function stableSort(list, rankOf) {
+    return list.map(function (x, i) { return { x: x, i: i, r: rankOf(x) }; })
+      .sort(function (a, b) { return a.r - b.r || a.i - b.i; }).map(function (o) { return o.x; });
+  }
+  function sortUpah(list) { return stableSort(list, function (m) { return upahRank(m.nama); }); }
+  var JENIS_RANK = { upah: 0, bahan: 1, alat: 2 };
+  function sortKom(list) {
+    return stableSort(list, function (k) {
+      var m = k.ref ? masterById(k.ref) : null;
+      return JENIS_RANK[k.jenis] * 10 + (k.jenis === 'upah' ? upahRank(m ? m.nama : k.nama) : 0);
+    });
+  }
+  function komRef(k) { return k.ref ? masterById(k.ref) : null; }
+  function komSrc(k) {
+    var opt1 = function (m) { return '<option value="' + m.id + '"' + (m.id === k.ref ? ' selected' : '') + '>' + esc(m.nama || 'Tanpa nama') + '</option>'; };
+    var opts = '<option value="">Isi manual</option>';
+    if (k.jenis === 'bahan') {
+      S.katBahan.concat(['']).forEach(function (nm) {
+        var l = S.master.bahan.filter(function (m) { return (m.kat || '') === nm; });
+        if (l.length) opts += '<optgroup label="' + esc(nm || 'Tanpa kategori') + '">' + l.map(opt1).join('') + '</optgroup>';
+      });
+    } else opts += S.master[k.jenis].map(opt1).join('');
+    return '<label class="fld"><span>Ambil dari daftar ' + MT[k.jenis][0] + '</span><select id="kom-' + k.id + '-ref" data-t="kom" data-id="' + k.id + '" data-f="ref">' + opts + '</select></label>';
+  }
+  function komNama(k) {
+    var m = komRef(k);
+    return m ? '<label class="fld"><span>Uraian komponen</span><input readonly value="' + esc(m.nama) + '"></label>' : fld('Uraian komponen', 'kom', k.id, 'nama', k.nama, { ph: 'mis. Semen portland' });
+  }
+  function komSatHarga(k) {
+    var m = komRef(k);
+    return m ? '<label class="fld"><span>Satuan</span><input readonly value="' + esc(m.satuan) + '"></label><label class="fld"><span>Harga satuan</span><input data-n="1" readonly value="' + num(hargaM(m)) + '"></label>'
+      : fld('Satuan', 'kom', k.id, 'satuan', k.satuan, { ph: 'kg' }) + fld('Harga satuan', 'kom', k.id, 'harga', k.harga, { n: true });
+  }
+  function jenisOpts(sel) { return Object.keys(JENIS).map(function (j) { return '<option value="' + j + '"' + (j === sel ? ' selected' : '') + '>' + JENIS[j] + '</option>'; }).join(''); }
+  function viewAhsp() {
+    var ahspCard = function (a) {
+      var koms = sortKom(a.komponen).map(function (k) {
+        return '<div class="kom"><div class="kom-top"><label class="fld"><span>Jenis</span><select id="kom-' + k.id + '-jenis" data-t="kom" data-id="' + k.id + '" data-f="jenis">' + jenisOpts(k.jenis) + '</select></label>' + komSrc(k) + '</div>' + komNama(k) +
+          '<div class="g3k">' + fld('Koefisien', 'kom', k.id, 'koef', k.koef, { n: true }) + komSatHarga(k) + '</div>' +
+          '<div class="kom-bot"><button class="btn small ghost" data-act="del-kom" data-id="' + k.id + '" data-danger="1">Hapus</button><b data-k="kom:' + k.id + '"></b></div></div>';
+      }).join('');
+      return '<details class="ahsp" data-aid="' + a.id + '"' + (openAhsp[a.id] ? ' open' : '') + '><summary><span class="s-name" data-k="ahspname:' + a.id + '"></span><span class="s-price" data-k="ahsp:' + a.id + '"></span></summary>' +
+        '<div class="ahsp-body"><div class="g3">' + fld('Kode', 'ahsp', a.id, 'kode', a.kode, { ph: 'A.1' }) + fld('Satuan', 'ahsp', a.id, 'satuan', a.satuan, { ph: 'm3' }) + divSel(a) + '</div>' +
+        fld('Nama pekerjaan', 'ahsp', a.id, 'nama', a.nama, { ph: 'mis. Pasangan bata merah' }) +
+        (koms || '<p class="hint">Belum ada komponen. Tambahkan upah, bahan, dan alat per satuan pekerjaan.</p>') +
+        '<div class="row"><button class="btn small" data-act="add-kom" data-id="' + a.id + '" data-j="upah">+ Upah</button><button class="btn small" data-act="add-kom" data-id="' + a.id + '" data-j="bahan">+ Material</button><button class="btn small" data-act="add-kom" data-id="' + a.id + '" data-j="alat">+ Sewa alat</button></div>' +
+        '<div class="ahsp-sum"><span>Upah<b data-k="ahspj:' + a.id + ':upah"></b></span><span>Material<b data-k="ahspj:' + a.id + ':bahan"></b></span><span>Sewa alat<b data-k="ahspj:' + a.id + ':alat"></b></span></div>' +
+        '<div class="kom">' + fld('Overhead (%)', 'ahsp', a.id, 'ohp', a.ohp, { n: true }) +
+        '<div><div class="line"><span>Jumlah upah, material, dan sewa alat</span><span class="v" data-k="ahspbase:' + a.id + '"></span></div>' +
+        '<div class="line"><span data-k="ahspohplbl:' + a.id + '"></span><span class="v" data-k="ahspohp:' + a.id + '"></span></div>' +
+        '<div class="line strong"><span>Harga satuan' + (a.satuan ? ' per ' + esc(a.satuan) : '') + '</span><span class="v" data-k="ahsptot:' + a.id + '"></span></div></div></div>' +
+        '<button class="btn small" data-act="del-ahsp" data-id="' + a.id + '" data-danger="1">Hapus AHSP ini</button></div></details>';
+    };
+    return '<h2>AHSP</h2>' + ahspGroups(ahspCard) + ahspDivManager();
+  }
+  function viewRab() {
+    var p = ap();
+    var divs = p.divisi.map(function (d, di) {
+      var open = !!rabOpen[d.id];
+      var items = d.items.map(function (it, ii) {
+        var usesA = it.ahsp && ahspById(it.ahsp);
+        var legacy = !usesA && (it.uraian || it.harga);
+        var ph = legacy ? 'Harga lama: ' + (it.uraian || 'tanpa uraian') + ' (pilih AHSP untuk mengganti)' : 'Pilih uraian pekerjaan dari AHSP';
+        return '<article class="item"><div class="item-top"><span class="no">' + (ii + 1) + '</span>' +
+          '<select id="item-' + it.id + '-ahsp" data-t="item" data-id="' + it.id + '" data-f="ahsp" aria-label="Uraian pekerjaan, pilih dari AHSP">' + ahspOptions(usesA ? it.ahsp : '', ph) + '</select>' +
+          '<button class="btn small ghost" data-act="del-item" data-id="' + it.id + '" data-danger="1">Hapus item</button></div>' +
+          '<div class="g3">' + fld('Volume', 'item', it.id, 'volume', it.volume, { n: true }) +
+          '<label class="fld"><span>Satuan</span><input readonly value="' + esc(itemSatuan(it)) + '"></label>' +
+          '<label class="fld"><span>' + (legacy ? 'Harga lama' : 'Harga satuan (AHSP)') + '</span><input data-n="1" readonly data-kv="itemp:' + it.id + '" value=""></label></div>' +
+          '<div class="item-bot"><span class="item-note">' + (legacy ? 'Masih memakai harga lama. Pilih AHSP untuk menggantinya.' : '') + '</span><span class="jml" data-k="item:' + it.id + '"></span></div></article>';
+      }).join('') || '<div class="empty">Belum ada item pekerjaan di divisi ini.</div>';
+      return '<section class="div"><div class="div-h"><span class="roman">' + huruf(di + 1) + '</span>' +
+        divPickOptions(d) +
+        '<div class="div-sub"><button class="tgl" data-act="tgl-div" data-id="' + d.id + '" aria-expanded="' + (open ? 'true' : 'false') + '">' + (open ? '▾ Sembunyikan' : '▸ Tampilkan') + ' (' + d.items.length + ' item)</button>' +
+        '<span class="sub-r">Sub total <b data-k="div:' + d.id + '"></b></span></div></div>' +
+        (open ? '<div class="items">' + items + '</div>' +
+        '<div class="div-f"><button class="btn small primary" data-act="add-item" data-id="' + d.id + '">+ Item pekerjaan</button></div>' : '') + '</section>';
+    }).join('');
+    return '<h2>RAB</h2>' + divs + divManager();
+  }
+  /* ---------- BQ (Bill of Quantity) dan RKS (Rencana Kerja dan Syarat-Syarat) ---------- */
+  function viewBQ() {
+    var p = ap(), n = 0;
+    var cards = p.divisi.map(function (d, di) {
+      n += d.items.length;
+      var rows = d.items.map(function (it, i) {
+        return '<div class="bqi"><span class="no">' + (i + 1) + '</span><span>' + esc(itemUraian(it) || 'Tanpa uraian') + '</span><span class="vol">' + esc(nf(it.volume)) + ' ' + esc(itemSatuan(it)) + '</span></div>';
+      }).join('') || '<p class="hint">Belum ada item pekerjaan di divisi ini.</p>';
+      var gid = 'q' + d.id;
+      return '<details class="grp nonum" data-gid="' + gid + '"' + (grpState[gid] ? ' open' : '') + '><summary><span class="g-name">' + huruf(di + 1) + '. ' + esc(d.nama || 'Tanpa nama') + '</span><span class="g-count">' + d.items.length + ' item</span></summary><div class="grp-body">' + rows + '</div></details>';
+    }).join('');
+    return '<h2>BQ</h2><p class="hint">' + n + ' item pekerjaan dalam ' + p.divisi.length + ' divisi.</p>' + cards;
+  }
+  function tarea(label, t, id, f, val, ph) {
+    return '<label class="fld"><span>' + label + '</span><textarea class="rksbox" id="' + t + '-' + id + '-' + f + '" data-t="' + t + '" data-id="' + id + '" data-f="' + f + '" placeholder="' + esc(ph || '') + '">' + esc(val || '') + '</textarea></label>';
+  }
+  function viewRKS() {
+    var p = ap();
+    var cards = p.divisi.map(function (d, di) {
+      var gid = 'r' + d.id, has = !!(d.rksLingkup || d.rksBahan || d.rksLaksana);
+      return '<details class="grp nonum" data-gid="' + gid + '"' + (grpState[gid] ? ' open' : '') + '><summary><span class="g-name">' + huruf(di + 1) + '. ' + esc(d.nama || 'Tanpa nama') + '</span><span class="g-count">' + (has ? 'terisi' : 'kosong') + '</span></summary><div class="grp-body">' +
+        tarea('Lingkup pekerjaan', 'div', d.id, 'rksLingkup', d.rksLingkup, 'Uraian pekerjaan yang termasuk dalam divisi ini') +
+        tarea('Persyaratan bahan', 'div', d.id, 'rksBahan', d.rksBahan, 'Jenis, mutu, dan syarat bahan') +
+        tarea('Pelaksanaan', 'div', d.id, 'rksLaksana', d.rksLaksana, 'Cara kerja, toleransi, pengujian, dan syarat hasil akhir') + '</div></details>';
+    }).join('');
+    return '<h2>RKS</h2>' +
+      '<div class="sheet"><h3>Ketentuan umum</h3>' + tarea('Isi ketentuan umum', 'proj', p.id, 'rksUmum', p.rksUmum, 'Ketentuan umum pelaksanaan pekerjaan') +
+      '<div class="row"><button class="btn" data-act="rks-isi">Isi bagian kosong dengan templat</button></div></div>' +
+      '<h3 class="sec">Syarat per divisi</h3>' + cards;
+  }
+  function rksIsi(p) {
+    var n = 0;
+    if (!p.rksUmum) { p.rksUmum = RKS_TPL.umum; n++; }
+    p.divisi.forEach(function (d) {
+      var t = RKS_TPL.div[String(d.nama || '').trim().toLowerCase()]; if (!t) return;
+      if (!d.rksLingkup) { d.rksLingkup = t.l; n++; }
+      if (!d.rksBahan) { d.rksBahan = t.b; n++; }
+      if (!d.rksLaksana) { d.rksLaksana = t.p; n++; }
+    });
+    return n;
+  }
+  /* ---------- Kurva S: bobot tiap item = jumlah harga / total RAB, disebar rata sepanjang durasinya ---------- */
+  function kurvaCalc(p) {
+    var sub = projCalc(p).sub, N = Math.max(1, Math.round(p.minggu) || 1), divs = [], unsched = 0, cnt = 0;
+    p.divisi.forEach(function (d) {
+      d.items.forEach(function (it) { var m = Math.round(it.mulai) || 0, u = Math.round(it.durasi) || 0; if (m >= 1 && u >= 1) N = Math.max(N, m + u - 1); });
+    });
+    var weekly = []; for (var w = 0; w <= N; w++) weekly.push(0);
+    p.divisi.forEach(function (d) {
+      var row = { id: d.id, nama: d.nama, bobot: 0, start: 0, end: 0, belum: 0 };
+      d.items.forEach(function (it) {
+        var tot = itemTotal(it), b = sub ? tot / sub * 100 : 0, m = Math.round(it.mulai) || 0, u = Math.round(it.durasi) || 0;
+        row.bobot += b;
+        if (m >= 1 && u >= 1) {
+          for (var k = m; k < m + u; k++) weekly[k] += b / u;
+          row.start = row.start ? Math.min(row.start, m) : m; row.end = Math.max(row.end, m + u - 1);
+        } else if (tot > 0) { unsched += b; row.belum++; cnt++; }
+      });
+      divs.push(row);
+    });
+    var cum = [0], run = 0; for (var i = 1; i <= N; i++) { run += weekly[i]; cum.push(run); }
+    return { N: N, weekly: weekly, cum: cum, divs: divs, unsched: unsched, nUnsched: cnt, sub: sub };
+  }
+  function pct(x, dp) { return (Math.round(x * Math.pow(10, dp == null ? 2 : dp)) / Math.pow(10, dp == null ? 2 : dp)).toLocaleString('id-ID', { minimumFractionDigits: dp == null ? 2 : dp, maximumFractionDigits: dp == null ? 2 : dp }) + '%'; }
+  function kurvaSvg(K) {
+    var W = 360, H = 230, L = 34, R = 10, T = 12, B = 30, pw = W - L - R, ph = H - T - B, N = K.N;
+    var X = function (w) { return L + w / N * pw; }, Y = function (v) { return T + ph - Math.min(100, v) / 100 * ph; };
+    var g = '', i, step = Math.max(1, Math.ceil(N / 12));
+    for (i = 0; i <= 4; i++) g += '<line class="grid" x1="' + L + '" x2="' + (W - R) + '" y1="' + Y(i * 25) + '" y2="' + Y(i * 25) + '"/><text x="' + (L - 4) + '" y="' + (Y(i * 25) + 3) + '" text-anchor="end">' + (i * 25) + '%</text>';
+    for (i = 1; i <= N; i++) {
+      var bh = K.weekly[i] / 100 * ph;
+      if (bh > 0) g += '<rect class="bar" x="' + (X(i - 1) + pw / N * 0.15).toFixed(1) + '" y="' + (Y(0) - bh).toFixed(1) + '" width="' + (pw / N * 0.7).toFixed(1) + '" height="' + bh.toFixed(1) + '"/>';
+      if (i % step === 0 || i === 1 || i === N) g += '<text x="' + (X(i - 0.5)).toFixed(1) + '" y="' + (H - B + 12) + '" text-anchor="middle">' + i + '</text>';
+    }
+    var pts = K.cum.map(function (v, w) { return X(w).toFixed(1) + ',' + Y(v).toFixed(1); }).join(' ');
+    var dots = N <= 30 ? K.cum.map(function (v, w) { return w ? '<circle class="dot" cx="' + X(w).toFixed(1) + '" cy="' + Y(v).toFixed(1) + '" r="2.2"/>' : ''; }).join('') : '';
+    return '<svg class="kchart" viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="Grafik kurva S: rencana kumulatif per minggu">' + g +
+      '<polyline class="curve" points="' + pts + '"/>' + dots + '<text x="' + (L + pw / 2) + '" y="' + (H - 4) + '" text-anchor="middle">Minggu ke-</text></svg>';
+  }
+  function kurvaHTML(p) {
+    var K = kurvaCalc(p), done = K.cum[K.N];
+    var msg = !K.sub ? 'Isi volume di tab RAB dulu supaya bobot pekerjaan terhitung.' :
+      done < 0.005 ? 'Belum ada jadwal. Isi mulai dan durasi tiap item di bawah, atau tekan Isi jadwal otomatis.' :
+      K.nUnsched ? K.nUnsched + ' item (bobot ' + pct(K.unsched) + ') belum dijadwalkan, jadi kurva baru mencapai ' + pct(done) + '.' : 'Semua item sudah terjadwal. Kurva mencapai ' + pct(done) + ' di minggu ke-' + K.N + '.';
+    var rows = '';
+    for (var w = 1; w <= K.N; w++) rows += '<tr><td>Minggu ' + w + '</td><td>' + pct(K.weekly[w]) + '</td><td>' + pct(K.cum[w]) + '</td></tr>';
+    return kurvaSvg(K) + '<p class="hint">' + esc(msg) + '</p>' +
+      '<details class="grp nonum"><summary><span class="g-name">Tabel rencana per minggu</span><span class="g-count">' + K.N + ' minggu</span></summary><div class="grp-body"><table class="ktbl"><tr><th>Minggu</th><th>Rencana</th><th>Kumulatif</th></tr>' + rows + '</table></div></details>';
+  }
+  function viewKurva() {
+    var p = ap();
+    var cards = p.divisi.map(function (d, di) {
+      var its = d.items.map(function (it) {
+        return '<div class="krow"><div class="krow-t">' + esc(itemUraian(it) || 'Tanpa uraian') + '<b data-k="ibobot:' + it.id + '"></b></div><div class="g2">' +
+          fld('Mulai minggu ke-', 'item', it.id, 'mulai', it.mulai, { n: true }) + fld('Durasi (minggu)', 'item', it.id, 'durasi', it.durasi, { n: true }) + '</div></div>';
+      }).join('') || '<p class="hint">Belum ada item pekerjaan di divisi ini.</p>';
+      var gid = 'k' + d.id;
+      return '<details class="grp nonum" data-gid="' + gid + '"' + (grpState[gid] ? ' open' : '') + '><summary><span class="g-name">' + huruf(di + 1) + '. ' + esc(d.nama || 'Tanpa nama') + '</span><span class="g-count" data-k="dbobot:' + d.id + '"></span></summary><div class="grp-body">' + its + '</div></details>';
+    }).join('');
+    return '<h2>Kurva S</h2>' +
+      '<div class="sheet"><h3>Jadwal proyek</h3><div class="g2">' + fld('Durasi proyek (minggu)', 'proj', p.id, 'minggu', p.minggu, { n: true }) + '</div>' +
+      '<p class="hint">Bobot tiap item = jumlah harga item dibagi total RAB. Bobot disebar rata sepanjang durasi item.</p>' +
+      '<div class="row"><button class="btn" data-act="auto-jadwal" data-danger="1">Isi jadwal otomatis</button></div></div>' +
+      '<div class="sheet"><h3>Kurva S rencana</h3><div id="kurva-box">' + kurvaHTML(p) + '</div></div>' +
+      '<h3 class="sec">Jadwal per item</h3>' + cards;
+  }
+  /* Isi jadwal otomatis: tiap divisi mendapat jendela waktu yang bergeser sesuai urutan, item dalam divisi memakai jendela yang sama. */
+  function autoJadwal(p) {
+    var N = Math.max(1, Math.round(p.minggu) || 12), sub = projCalc(p).sub;
+    if (!sub) return false;
+    var act = p.divisi.filter(function (d) { return divTotal(d) > 0; }), k = act.length, L = Math.min(N, Math.max(2, Math.round(N * 0.4))), i = 0;
+    p.divisi.forEach(function (d) {
+      if (!divTotal(d)) { d.items.forEach(function (it) { it.mulai = 0; it.durasi = 0; }); return; }
+      var m = k > 1 ? 1 + Math.round((N - L) * i / (k - 1)) : 1, u = k > 1 ? L : N;
+      d.items.forEach(function (it) { it.mulai = m; it.durasi = u; }); i++;
+    });
+    return true;
+  }
+  function viewRekap() {
+    var p = ap();
+    var rows = p.divisi.map(function (d, i) {
+      return '<div class="line"><span>' + huruf(i + 1) + '. ' + esc(d.nama || 'Tanpa nama') + '<span class="pct" data-k="pct:' + d.id + '"></span></span><span class="v" data-k="div:' + d.id + '"></span></div>';
+    }).join('') || '<p class="hint">Belum ada divisi pekerjaan.</p>';
+    return '<h2>Rekapitulasi</h2>' +
+      '<div class="sheet"><h3>Rekap per divisi</h3><div>' + rows +
+      '<div class="line strong"><span>Jumlah</span><span class="v" data-k="sub"></span></div>' +
+      '<div class="line"><span data-k="ppnlbl"></span><span class="v" data-k="ppn"></span></div>' +
+      '<div class="line strong"><span>Total</span><span class="v" data-k="total"></span></div>' +
+      '<div class="line total"><span>Dibulatkan</span><span class="v" data-k="bulat"></span></div></div>' +
+      '<div class="terbilang" data-k="terbilang"></div>' +
+      '<div class="line"><span>Biaya per m2 bangunan</span><span class="v" data-k="m2"></span></div></div>';
+  }
+  function matCard(j, m, usage, canUp, canDown) {
+    var u = usage[m.id] || 0;
+    var katSel = j !== 'bahan' ? '' : '<label class="fld"><span>Kategori</span><select data-t="mst" data-id="' + m.id + '" data-f="kat">' +
+      '<option value=""' + (m.kat ? '' : ' selected') + '>Tanpa kategori</option>' + S.katBahan.map(function (k) { return '<option value="' + esc(k) + '"' + (k === m.kat ? ' selected' : '') + '>' + esc(k) + '</option>'; }).join('') + '</select></label>';
+    return '<div class="mcard" data-q="' + esc((m.nama || '').toLowerCase()) + '">' +
+      fld('Nama', 'mst', m.id, 'nama', m.nama, { ph: MT[j][2] }) +
+      '<div class="g2">' + fld('Satuan', 'mst', m.id, 'satuan', m.satuan, { ph: MT[j][3] }) + fld('Harga satuan (Rp)', 'mst', m.id, 'harga', hargaM(m, ap()), { n: true }) + '</div>' + katSel +
+      '<div class="mcard-bot"><span class="used">' + (u ? 'Dipakai di ' + u + ' komponen AHSP' : 'Belum dipakai di AHSP') + '</span><span class="mcard-act">' +
+      '<button class="btn small mv" data-act="mv-mst" data-dir="-1" data-id="' + m.id + '" aria-label="Geser ke atas"' + (canUp ? '' : ' disabled') + '>▲</button>' +
+      '<button class="btn small mv" data-act="mv-mst" data-dir="1" data-id="' + m.id + '" aria-label="Geser ke bawah"' + (canDown ? '' : ' disabled') + '>▼</button>' +
+      '<button class="btn small ghost" data-act="del-mst" data-id="' + m.id + '" data-danger="1">Hapus</button></span></div></div>';
+  }
+  function viewMaster(j) {
+    var usage = {};
+    S.ahsp.forEach(function (a) { a.komponen.forEach(function (k) { if (k.ref) usage[k.ref] = (usage[k.ref] || 0) + 1; }); });
+    var title = MT[j][0], arr = S.master[j], body;
+    var neighbor = function (at, dir) { for (var q = at + dir; q >= 0 && q < arr.length; q += dir) { if (j !== 'bahan' || arr[q].kat === arr[at].kat) return true; } return false; };
+    if (j === 'bahan') {
+      var names = S.katBahan.slice(); if (arr.some(function (m) { return !m.kat; })) names.push('');
+      body = names.map(function (nm) {
+        var gid = 'k:' + nm, list = arr.filter(function (m) { return (m.kat || '') === nm; });
+        return '<details class="grp nonum" data-gid="' + esc(gid) + '"' + (grpState[gid] ? ' open' : '') + '><summary><span class="g-name">' + esc(nm || 'Tanpa kategori') + '</span><span class="g-count">' + list.length + ' material</span></summary>' +
+          '<div class="grp-body">' + (nm ? '<div class="katmv katedit"><label class="fld"><span>Nama kategori</span><input type="text" data-katname="' + esc(nm) + '" value="' + esc(nm) + '" autocomplete="off"></label></div><div class="katmv"><span class="used">Urutan kategori</span><span class="mcard-act"><button class="btn small mv" data-act="mv-kat" data-dir="-1" data-id="' + esc(nm) + '" aria-label="Geser kategori ke atas"' + (S.katBahan.indexOf(nm) === 0 ? ' disabled' : '') + '>▲</button><button class="btn small mv" data-act="mv-kat" data-dir="1" data-id="' + esc(nm) + '" aria-label="Geser kategori ke bawah"' + (S.katBahan.indexOf(nm) === S.katBahan.length - 1 ? ' disabled' : '') + '>▼</button><button class="btn small ghost" data-act="del-kat" data-id="' + esc(nm) + '" data-danger="1">Hapus</button></span></div>' : '') + (list.map(function (m) { var at = arr.indexOf(m); return matCard(j, m, usage, neighbor(at, -1), neighbor(at, 1)); }).join('') || '<p class="hint">Belum ada material di kategori ini.</p>') +
+          (nm ? '<button class="btn small primary" data-act="add-mst" data-id="bahan" data-kat="' + esc(nm) + '">+ Tambah material di kategori ini</button>' : '') + '</div></details>';
+      }).join('');
+    } else {
+      body = arr.map(function (m, mi) { return matCard(j, m, usage, mi > 0, mi < arr.length - 1); }).join('') || '<div class="sheet"><p class="hint">Belum ada data. Tekan tombol di bawah untuk menambahkan yang pertama.</p></div>';
+    }
+    return '<h2>' + title + '</h2><p class="hint">Harga untuk proyek: <b data-k="pname"></b></p>' +
+      (arr.length > 6 ? '<input id="mst-search-' + j + '" data-search="1" type="search" placeholder="Cari di daftar ' + title.toLowerCase() + '" autocomplete="off">' : '') +
+      body + (j === 'bahan' ? '<div class="sheet"><h3>Kategori material</h3><div class="row"><input id="kat-new" type="text" placeholder="mis. Material Finishing" autocomplete="off" style="flex:1;min-width:0"><button class="btn primary" data-act="add-kat">Tambah kategori</button></div></div>' : '<button class="btn primary" data-act="add-mst" data-id="' + j + '">Tambah ' + MT[j][4] + '</button>');
+  }
+  var VIEWS = { proyek: viewProyek, ahsp: viewAhsp, rab: viewRab, rekap: viewRekap, kurva: viewKurva, bq: viewBQ, rks: viewRKS,
+    upah: function () { return viewMaster('upah'); }, bahan: function () { return viewMaster('bahan'); }, alat: function () { return viewMaster('alat'); } };
+
+  function kval(k, p, c) {
+    var a = k.split(':'), t = a[0], id = a[1], x;
+    switch (t) {
+      case 'pname': return p.nama || 'Tanpa nama';
+      case 'grand': return rp(c.bulat);
+      case 'proj': x = S.projects.filter(function (q) { return q.id === id; })[0]; return x ? rp(projCalc(x).bulat) : '';
+      case 'div': return rp(divTotal(findDiv(p, id) || ZERO_D));
+      case 'item': return rp(itemTotal(findItem(p, id) || ZERO_I));
+      case 'ahsp': x = ahspById(id); return x ? rp(ahspPrice(x)) + (x.satuan ? ' / ' + x.satuan : '') : '';
+      case 'ahspname': x = ahspById(id); return x ? ((x.kode ? x.kode + '  ' : '') + (x.nama || 'AHSP baru')) : '';
+      case 'ahspj': x = ahspById(id); return x ? rp(ahspJenis(x, a[2])) : '';
+      case 'kom': x = findKom(id); return x ? rp(Math.round(x.koef * komHarga(x))) : '';
+      case 'ibobot': x = findItem(p, id); return x && c.sub ? pct(itemTotal(x) / c.sub * 100) : '0,00%';
+      case 'dbobot': x = findDiv(p, id); return x && c.sub ? pct(divTotal(x) / c.sub * 100) : '';
+      case 'pct': x = findDiv(p, id); return x && c.sub ? Math.round(divTotal(x) / c.sub * 1000) / 10 + '%' : '';
+      case 'ahspohplbl': x = ahspById(id); return x ? 'Overhead ' + nf(x.ohp || 0) + '%' : '';
+      case 'ahspbase': x = ahspById(id); return x ? rp(ahspBase(x)) : '';
+      case 'ahspohp': x = ahspById(id); return x ? rp(ahspOhp(x)) : '';
+      case 'ahsptot': x = ahspById(id); return x ? rp(ahspPrice(x)) : '';
+      case 'sub': case 'ohp': case 'dasar': case 'ppn': case 'total': case 'bulat': return rp(c[t]);
+      case 'ohplbl': return 'Overhead ' + nf(p.ohp) + '%';
+      case 'ppnlbl': return 'PPN ' + nf(p.ppn) + '%';
+      case 'terbilang': return 'Terbilang: ' + terbilang(c.bulat);
+      case 'm2': return p.luas > 0 ? rp(c.bulat / p.luas) : 'Isi luas bangunan di tab Proyek';
+    }
+    return '';
+  }
+  function refresh() {
+    var p = ap(), c = projCalc(p);
+    document.querySelectorAll('[data-k]').forEach(function (el) { el.textContent = kval(el.dataset.k, p, c); });
+    var kb = document.getElementById('kurva-box'); if (kb) { var op = kb.querySelector('details') && kb.querySelector('details').open; kb.innerHTML = kurvaHTML(p); if (op) kb.querySelector('details').open = true; }
+    document.querySelectorAll('[data-kv]').forEach(function (el) {
+      if (document.activeElement === el) return;
+      var it = findItem(p, el.dataset.kv.split(':')[1]); el.value = it ? num(itemPrice(it)) : '';
+    });
+  }
+  function render() {
+    $('#nav').innerHTML = TABS.map(function (t) { return '<button class="tab" data-act="tab" data-id="' + t[0] + '"' + (t[0] === tab ? ' aria-current="page"' : '') + '>' + t[1] + '</button>'; }).join('');
+    var nv = $('#nav'), cur = nv.querySelector('.tab[aria-current="page"]');
+    if (cur) nv.scrollLeft = Math.max(0, cur.offsetLeft - (nv.clientWidth - cur.offsetWidth) / 2);
+    $('#view').innerHTML = VIEWS[tab]();
+    refresh();
+  }
+
+  /* ---------- toast, export ---------- */
+  var toastT;
+  function toast(m) { var el = $('#toast'); el.textContent = m; el.classList.add('on'); clearTimeout(toastT); toastT = setTimeout(function () { el.classList.remove('on'); }, 2600); }
+  function csvCell(v) { v = String(v == null ? '' : v); return /[;"\n\r]/.test(v) ? '"' + v.replace(/"/g, '""') + '"' : v; }
+  function buildCSV(p) {
+    var c = projCalc(p), L = ['sep=;'];
+    var row = function () { L.push(Array.prototype.slice.call(arguments).map(csvCell).join(';')); };
+    row('RENCANA ANGGARAN BIAYA'); row('Proyek', p.nama); row('Jenis bangunan', p.jenis); row('Lokasi', p.lokasi); row('Pemberi tugas', p.pemilik); row('Perencana', p.perencana); row('Tahun anggaran', p.tahun); row();
+    row('No', 'Uraian pekerjaan', 'Satuan', 'Volume', 'Harga satuan (Rp)', 'Jumlah harga (Rp)');
+    p.divisi.forEach(function (d, i) {
+      row(huruf(i + 1), d.nama, '', '', '', divTotal(d));
+      d.items.forEach(function (it, j) { row(j + 1, itemUraian(it), itemSatuan(it), nf(it.volume), Math.round(itemPrice(it)), itemTotal(it)); });
+    });
+    row();
+    row('', 'Jumlah', '', '', '', c.sub);     row('', 'PPN ' + nf(p.ppn) + '%', '', '', '', c.ppn); row('', 'Total', '', '', '', c.total); row('', 'Dibulatkan', '', '', '', c.bulat); row('', 'Terbilang', terbilang(c.bulat));
+    return '﻿' + L.join('\r\n');
+  }
+  function summaryText(p) {
+    var c = projCalc(p), L = ['RAB ' + (p.nama || 'Tanpa nama')];
+    if (p.lokasi) L.push('Lokasi: ' + p.lokasi);
+    L.push('');
+    p.divisi.forEach(function (d, i) { L.push(huruf(i + 1) + '. ' + d.nama + ': ' + rp(divTotal(d))); });
+    L.push('', 'Jumlah: ' + rp(c.sub), 'PPN ' + nf(p.ppn) + '%: ' + rp(c.ppn), 'Total dibulatkan: ' + rp(c.bulat), terbilang(c.bulat));
+    if (p.luas > 0) L.push('Per m2: ' + rp(c.bulat / p.luas));
+    return L.join('\n');
+  }
+  var PICK_LIST = [['rekap', 'Rekapitulasi'], ['rab', 'RAB'], ['bq', 'BQ'], ['rks', 'RKS'], ['kurva', 'Kurva S'], ['upah', 'Upah'], ['bahan', 'Material'], ['alat', 'Sewa Alat'], ['ahsp', 'AHSP']];
+  var PICK = {};
+  PICK_LIST.forEach(function (x) { PICK[x[0]] = true; });
+  try { var pk = JSON.parse(localStorage.getItem('rab-gedung-pick') || 'null'); if (pk) PICK_LIST.forEach(function (x) { if (pk[x[0]] === false) PICK[x[0]] = false; }); } catch (e) { /* abaikan */ }
+  function pickHTML() {
+    return '<p class="hint" style="margin:10px 0 4px">Bagian yang ikut disimpan ke .pdf dan .xlsx:</p><div class="pick">' + PICK_LIST.map(function (x) {
+      return '<label><input type="checkbox" data-act="pick" data-id="' + x[0] + '"' + (PICK[x[0]] ? ' checked' : '') + '><span>' + x[1] + '</span></label>';
+    }).join('') + '</div>';
+  }
+  function slug(s) { return (String(s || 'proyek').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || 'proyek'); }
+  function browserSave(filename, data) {
+    try {
+      var types = { json: 'application/json', csv: 'text/csv;charset=utf-8', pdf: 'application/pdf', html: 'text/html;charset=utf-8', xlsx: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' };
+      var ext = (filename.split('.').pop() || '').toLowerCase();
+      var blob = data instanceof Blob ? data : new Blob([data], { type: types[ext] || 'application/octet-stream' });
+      var url = URL.createObjectURL(blob);
+      var a = document.createElement('a'); a.href = url; a.download = filename; document.body.appendChild(a); a.click();
+      setTimeout(function () { URL.revokeObjectURL(url); a.remove(); }, 4000);
+      toast('File diunduh: ' + filename);
+    } catch (e) { toast('Browser ini belum bisa menyimpan file.'); }
+  }
+  async function save(filename, data) {
+    try {
+      var dl = window.claude && window.claude.use ? await window.claude.use('downloads') : null;
+      if (!dl) { browserSave(filename, data); return; }
+      await dl.save({ filename: filename, data: data });
+      toast('File disimpan.');
+    } catch (e) {
+      toast(e && e.code === 'declined' ? 'Penyimpanan dibatalkan.' : 'File belum bisa disimpan di tampilan ini.');
+    }
+  }
+
+  /* Memecah teks RKS menjadi blok: paragraf biasa atau butir berpenanda (1. / 1) / a. / - / * / bullet). Penanda dirapikan. */
+  function rksBlocks(text) {
+    var out = [];
+    String(text || '').split(/\r?\n/).forEach(function (raw) {
+      var ln = raw.replace(/\s+/g, ' ').trim(); if (!ln) return;
+      var m = /^(\d{1,3})\s*[.)]\s+(.+)$/.exec(ln);
+      if (m) { out.push({ m: m[1] + '.', t: m[2] }); return; }
+      m = /^([a-z])\s*[.)]\s+(.+)$/.exec(ln);
+      if (m) { out.push({ m: m[1] + '.', t: m[2] }); return; }
+      m = /^[-*•–—]\s+(.+)$/.exec(ln);
+      if (m) { out.push({ m: '•', t: m[1] }); return; }
+      out.push({ m: '', t: ln });
+    });
+    return out;
+  }
+  /* ---------- PDF: Rekapitulasi, RAB, lampiran AHSP (pustaka pdf-lib, ikut dikirim bersama halaman) ---------- */
+  var pdfLoading = null;
+  function loadPdfLib() {
+    if (window.PDFLib) return Promise.resolve();
+    if (!pdfLoading) {
+      pdfLoading = new Promise(function (ok, bad) {
+        var s = document.createElement('script'); s.src = 'pdf-lib.min.js'; s.onload = ok; s.onerror = function () { bad(new Error('load')); };
+        document.head.appendChild(s);
+      }).catch(function (e) { pdfLoading = null; throw e; });
+    }
+    return pdfLoading;
+  }
+  function pnum(x) { return String(Math.round(x * 10000) / 10000).replace('.', ','); }
+  function pr(n) { return Math.round(n).toLocaleString('id-ID'); }
+  async function buildPDF(p) {
+    var PL = window.PDFLib, doc = await PL.PDFDocument.create();
+    doc.setTitle('Rencana Anggaran Biaya - ' + (p.nama || ''));
+    var FN = await doc.embedFont(PL.StandardFonts.Helvetica), FB = await doc.embedFont(PL.StandardFonts.HelveticaBold), FI = await doc.embedFont(PL.StandardFonts.HelveticaOblique);
+    var PW = 595.28, PH = 841.89, MX = 42.5, CW = PW - 2 * MX, TOP = 48, BOT = PH - 50;
+    var rgb = function (r, g, b) { return PL.rgb(r / 255, g / 255, b / 255); };
+    var NAVY = rgb(22, 57, 74), LG = rgb(232, 238, 240), MG = rgb(190, 202, 207), INK = rgb(20, 30, 35), WHITE = rgb(255, 255, 255);
+    var page, y, c = projCalc(p);
+    var secStart = [], secKeys = [], pick = PICK;
+    function newPage() { page = doc.addPage([PW, PH]); y = TOP; }
+    function newSection(key) { secStart.push(doc.getPageCount()); secKeys.push(key); newPage(); }
+    /* teks yang aman untuk huruf standar PDF: karakter di luar WinAnsi diganti */
+    function safe(s, f) {
+      s = String(s == null ? '' : s).replace(/\s*\n\s*/g, ' ').replace(/\u00B2/g, '2').replace(/\u00B3/g, '3');
+      var o = '';
+      for (var i = 0; i < s.length; i++) { var ch = s.charAt(i); try { f.widthOfTextAtSize(ch, 10); o += ch; } catch (e) { o += '?'; } }
+      return o;
+    }
+    function wrap(s, f, size, maxW) {
+      s = safe(s, f); var words = s.split(' '), lines = [], cur = '';
+      words.forEach(function (w) {
+        var t = cur ? cur + ' ' + w : w;
+        if (f.widthOfTextAtSize(t, size) <= maxW || !cur) cur = t; else { lines.push(cur); cur = w; }
+      });
+      lines.push(cur); return lines;
+    }
+    function put(str, x, top, size, f, color, align, w) {
+      str = safe(str, f); var tw = f.widthOfTextAtSize(str, size);
+      var px = align === 'r' ? x + w - tw : align === 'c' ? x + (w - tw) / 2 : x;
+      page.drawText(str, { x: px, y: PH - top - size * 0.8, size: size, font: f, color: color || INK });
+    }
+    /* satu baris tabel. cell: {t, a:'l'|'c'|'r', b, i, fill, color, span} */
+    var SZ = 8.5, LH = 10.5, PX = 4, PY = 3.5;
+    function rowGeom(cols, cells) {
+      var ci = 0, h = 0, g = [];
+      cells.forEach(function (cell) {
+        var span = cell.span || 1, w = 0;
+        for (var k = 0; k < span; k++) w += cols[ci + k];
+        var f = cell.b ? FB : cell.i ? FI : FN, lines = wrap(cell.t, f, SZ, w - 2 * PX);
+        g.push({ cell: cell, x: ci, span: span, w: w, f: f, lines: lines });
+        h = Math.max(h, lines.length * LH + 2 * PY); ci += span;
+      });
+      return { g: g, h: h };
+    }
+    function drawGeom(cols, geo) {
+      var x0 = MX;
+      geo.g.forEach(function (q) {
+        var x = MX; for (var k = 0; k < q.x; k++) x += cols[k];
+        page.drawRectangle({ x: x, y: PH - y - geo.h, width: q.w, height: geo.h, color: q.cell.fill, borderColor: MG, borderWidth: 0.4 });
+        q.lines.forEach(function (ln, i) { put(ln, x + PX, y + PY + i * LH, SZ, q.f, q.cell.color, q.cell.a || 'l', q.w - 2 * PX); });
+      });
+      y += geo.h;
+    }
+    /* rows: daftar baris (array cell). head: baris judul yang diulang di halaman berikutnya. keep: seluruh tabel harus muat satu halaman. */
+    function table(cols, head, rows, keep) {
+      var hg = head.map(function (r) { return rowGeom(cols, r); }), hh = hg.reduce(function (s, r) { return s + r.h; }, 0);
+      var rg = rows.map(function (r) { var o = rowGeom(cols, r.cells || r); o.keepNext = r.keepNext; return o; });
+      if (keep) { var tot = hh + rg.reduce(function (s, r) { return s + r.h; }, 0); if (y + tot > BOT && y > TOP + 5) newPage(); }
+      var drawHead = function () { hg.forEach(function (r) { drawGeom(cols, r); }); };
+      if (y + hh + (rg[0] ? rg[0].h : 0) > BOT) newPage();
+      drawHead();
+      rg.forEach(function (r, i) {
+        var need = r.h + (r.keepNext && rg[i + 1] ? rg[i + 1].h : 0);
+        if (y + need > BOT) { newPage(); drawHead(); }
+        drawGeom(cols, r);
+      });
+    }
+    function title(t) {
+      var tw = FB.widthOfTextAtSize(t, 14); page.drawText(t, { x: (PW - tw) / 2, y: PH - y - 12, size: 14, font: FB, color: INK }); y += 24;
+    }
+    function infoBlock() {
+      var L = [['Pekerjaan', p.nama], ['Jenis Bangunan', p.jenis], ['Pemberi tugas', p.pemilik], ['Perencana', p.perencana]], R = [['Tahun Anggaran', String(p.tahun || '')], ['Luas Bangunan', pnum(p.luas || 0) + ' m²']];
+      L.forEach(function (r, i) { put(r[0], MX, y + i * 13, 9, FB); put(': ' + (r[1] || '-'), MX + 80, y + i * 13, 9, FN); });
+      R.forEach(function (r, i) { put(r[0], MX + 300, y + i * 13, 9, FB); put(': ' + r[1], MX + 385, y + i * 13, 9, FN); });
+      put('Lokasi', MX + 300, y + R.length * 13, 9, FB);
+      var lk = wrap(': ' + (p.lokasi || '-'), FN, 9, CW - 385).slice(0, 5);
+      lk.forEach(function (ln, i) { put(ln, MX + 385, y + (R.length + i) * 13, 9, FN); });
+      y += Math.max(68, (R.length + lk.length) * 13 + 6); page.drawLine({ start: { x: MX, y: PH - y }, end: { x: PW - MX, y: PH - y }, thickness: 1.2, color: NAVY }); y += 10;
+    }
+    var H = function (t, a) { return { t: t, a: a || 'c', b: true, fill: NAVY, color: WHITE }; };
+    /* 1. Rekapitulasi */
+    newSection('rekap'); title('REKAPITULASI RENCANA ANGGARAN BIAYA'); infoBlock();
+    var cr = [PW - 2 * MX - 40 - 112, 40, 112]; cr = [40, CW - 40 - 112, 112];
+    var rows = p.divisi.map(function (d, i) { var s = divTotal(d); return [{ t: huruf(i + 1), a: 'c' }, { t: String(d.nama || '').toUpperCase() }, { t: s ? pr(s) : '-', a: 'r' }]; });
+    var BF = function (t) { return { t: t, a: 'r', b: true, fill: LG, span: 2 }; };
+    rows.push([BF('JUMLAH'), { t: pr(c.sub), a: 'r', b: true, fill: LG }]);
+    rows.push([{ t: 'PPN ' + pnum(p.ppn || 0) + '%', a: 'r', span: 2 }, { t: pr(c.ppn), a: 'r' }]);
+    rows.push([BF('TOTAL'), { t: pr(c.total), a: 'r', b: true, fill: LG }]);
+    rows.push([BF('TOTAL DIBULATKAN'), { t: pr(c.bulat), a: 'r', b: true, fill: LG }]);
+    table(cr, [[H('NO'), H('URAIAN PEKERJAAN'), H('JUMLAH HARGA (Rp)')]], rows);
+    y += 14;
+    var tb = terbilang(c.bulat); tb = tb.charAt(0).toUpperCase() + tb.slice(1);
+    put('Terbilang:', MX, y, 9, FB);
+    wrap(tb, FI, 9, CW - 55).forEach(function (ln, i) { put(ln, MX + 52, y + i * 12, 9, FI); });
+    y += 52;
+    var cx1 = MX + CW * 0.25, cx2 = MX + CW * 0.75, mid = function (t, cx, top, f) { var w = f.widthOfTextAtSize(safe(t, f), 9); put(t, cx - w / 2, top, 9, f); };
+    mid('Dibuat oleh,', cx1, y, FN); mid('Disetujui oleh,', cx2, y, FN);
+    var sigName = function (n) { return n && n.trim() ? n.trim() : '....................................'; };
+    mid(sigName(p.perencana), cx1, y + 70, FB); mid(sigName(p.pemilik), cx2, y + 70, FB);
+    mid('Perencana', cx1, y + 83, FN); mid('Pemberi tugas', cx2, y + 83, FN);
+    /* 2. Rencana Anggaran Biaya */
+    newSection('rab'); title('RENCANA ANGGARAN BIAYA'); infoBlock();
+    var cw = [32, CW - 32 - 36 - 50 - 78 - 84, 36, 50, 78, 84], body = [];
+    p.divisi.forEach(function (d, i) {
+      var L = huruf(i + 1), s = divTotal(d);
+      body.push({ keepNext: true, cells: [{ t: L, a: 'c', b: true, fill: LG }, { t: String(d.nama || '').toUpperCase(), b: true, fill: LG, span: 5 }] });
+      d.items.forEach(function (it, n) {
+        var hs = itemPrice(it), jm = itemTotal(it);
+        body.push([{ t: String(n + 1), a: 'c' }, { t: itemUraian(it) }, { t: itemSatuan(it).replace(/\bm2\b/, 'm²').replace(/\bm3\b/, 'm³'), a: 'c' }, { t: pnum(it.volume), a: 'r' }, { t: hs ? pr(hs) : '-', a: 'r' }, { t: jm ? pr(jm) : '-', a: 'r' }]);
+      });
+      body.push([{ t: 'Sub Total ' + L, a: 'r', b: true, span: 5 }, { t: s ? pr(s) : '-', a: 'r', b: true }]);
+    });
+    table(cw, [[H('NO'), H('URAIAN PEKERJAAN'), H('SAT'), H('VOLUME'), H('HARGA SATUAN (Rp)'), H('JUMLAH HARGA (Rp)')]], body);
+    /* BQ dan RKS */
+    (function () {
+      var ensure = function (h) { if (y + h > BOT) newPage(); };
+      /* --- BQ --- */
+      newSection('bq'); title('BILL OF QUANTITY (BQ)'); infoBlock();
+      put('Kolom harga satuan dan jumlah harga diisi oleh penyedia jasa.', MX, y, 8.5, FI, rgb(86, 106, 110)); y += 16;
+      var qc = [32, CW - 32 - 44 - 60 - 84 - 90, 44, 60, 84, 90], qb = [];
+      p.divisi.forEach(function (d, i) {
+        var L = huruf(i + 1);
+        qb.push({ keepNext: true, cells: [{ t: L, a: 'c', b: true, fill: LG }, { t: String(d.nama || '').toUpperCase(), b: true, fill: LG, span: 5 }] });
+        d.items.forEach(function (it, n) { qb.push([{ t: String(n + 1), a: 'c' }, { t: itemUraian(it) }, { t: itemSatuan(it), a: 'c' }, { t: pnum(it.volume), a: 'r' }, { t: '' }, { t: '' }]); });
+        qb.push([{ t: 'Sub Total ' + L, a: 'r', b: true, span: 5 }, { t: '' }]);
+      });
+      qb.push([{ t: 'JUMLAH', a: 'r', b: true, fill: LG, span: 5 }, { t: '', fill: LG }]);
+      table(qc, [[H('NO'), H('URAIAN PEKERJAAN'), H('SAT'), H('VOLUME'), H('HARGA SATUAN (Rp)'), H('JUMLAH HARGA (Rp)')]], qb);
+      /* --- RKS --- */
+      /* paragraf: baris pertama menjorok satu tab; butir bernomor: penanda menjorok setengah tab, teks menggantung */
+      var TAB = 24, MW = 18, MI = 12;
+      var wrap2 = function (str, f, size, w1, w2) {
+        var words = safe(str, f).split(' '), lines = [], cur = '', lim = w1;
+        words.forEach(function (wd) {
+          var t = cur ? cur + ' ' + wd : wd;
+          if (f.widthOfTextAtSize(t, size) <= lim || !cur) cur = t; else { lines.push(cur); cur = wd; lim = w2; }
+        });
+        lines.push(cur); return lines;
+      };
+      var para = function (text, x, w, size, f, lh) {
+        rksBlocks(text).forEach(function (b) {
+          var lines = b.m ? wrap2(b.t, f, size, w - MI - MW, w - MI - MW) : wrap2(b.t, f, size, w - TAB, w);
+          lines.forEach(function (ln, li) {
+            if (y + lh > BOT) newPage();
+            if (b.m) { if (li === 0) put(b.m, x + MI, y, size, f); put(ln, x + MI + MW, y, size, f); }
+            else put(ln, x + (li === 0 ? TAB : 0), y, size, f);
+            y += lh;
+          });
+          y += 2.5;
+        });
+      };
+      /* nama pasal: rata tengah, tebal, dengan jarak lebih lebar di atas dan di bawah */
+      var bar = function (t) {
+        ensure(100); y += 10;
+        page.drawRectangle({ x: MX, y: PH - y - 20, width: CW, height: 20, color: LG, borderColor: MG, borderWidth: 0.4 });
+        var tw = FB.widthOfTextAtSize(safe(t, FB), 10); put(t, MX + (CW - tw) / 2, y + 5, 10, FB); y += 32;
+      };
+      newSection('rks'); title('RENCANA KERJA DAN SYARAT-SYARAT (RKS)'); infoBlock();
+      var any = !!p.rksUmum;
+      if (p.rksUmum) { bar('KETENTUAN UMUM'); para(p.rksUmum, MX + 4, CW - 8, 9, FN, 12.5); y += 8; }
+      p.divisi.forEach(function (d, i) {
+        var f3 = [['Lingkup pekerjaan', d.rksLingkup], ['Persyaratan bahan', d.rksBahan], ['Pelaksanaan', d.rksLaksana]].filter(function (x) { return x[1] && String(x[1]).trim(); });
+        if (!f3.length) return; any = true;
+        bar(huruf(i + 1) + '. ' + String(d.nama || '').toUpperCase());
+        f3.forEach(function (x, k) { ensure(40); put((k + 1) + '. ' + x[0], MX + 4, y, 9, FB); y += 13; para(x[1], MX + 16, CW - 20, 9, FN, 12.5); y += 6; });
+        y += 4;
+      });
+      if (!any) put('RKS belum diisi. Isi di tab RKS pada aplikasi.', MX, y, 9, FI, rgb(86, 106, 110));
+    })();
+    /* Kurva S */
+    (function () {
+      var K = kurvaCalc(p), N = K.N, ACC = rgb(11, 107, 122);
+      newSection('kurva'); title('KURVA S'); infoBlock();
+      put('Durasi proyek: ' + N + ' minggu. Bobot item = jumlah harga item / total RAB, disebar rata sepanjang durasi item.', MX, y, 8.5, FI, rgb(86, 106, 110)); y += 18;
+      var ensure = function (h) { if (y + h > BOT) newPage(); };
+      var step = Math.max(1, Math.ceil(N / 16));
+      var fit = function (t, f, size, maxW) { t = safe(t, f); if (f.widthOfTextAtSize(t, size) <= maxW) return t; while (t.length > 1 && f.widthOfTextAtSize(t + '...', size) > maxW) t = t.slice(0, -1); return t + '...'; };
+      /* jadwal per divisi (batang) */
+      var gl = 168, gb = 44, gw = CW - gl - gb, rh = 15, gx = function (w) { return MX + gl + gw * (w / N); };
+      var rows = K.divs.map(function (d, i) { return { L: huruf(i + 1), d: d }; }).filter(function (r) { return r.d.bobot > 0 || r.d.start; });
+      ensure(18 + rows.length * rh + 8);
+      page.drawRectangle({ x: MX, y: PH - y - 16, width: CW, height: 16, color: NAVY });
+      put('DIVISI', MX + 5, y + 4, 8, FB, WHITE); put('BOBOT', MX + gl + gw, y + 4, 8, FB, WHITE, 'r', gb - 4);
+      for (var w = 1; w <= N; w++) if (w % step === 0 || w === 1) { var lbl = String(w), tw = FB.widthOfTextAtSize(lbl, 7); put(lbl, gx(w - 0.5) - tw / 2, y + 4.5, 7, FB, WHITE); }
+      y += 16;
+      var top0 = y;
+      rows.forEach(function (r, i) {
+        if (i % 2) page.drawRectangle({ x: MX, y: PH - y - rh, width: CW, height: rh, color: rgb(244, 247, 248) });
+        put(fit(r.L + '. ' + r.d.nama, FN, 8, gl - 8), MX + 4, y + 4, 8, FN);
+        put(pct(r.d.bobot), MX + gl + gw, y + 4, 8, FN, INK, 'r', gb - 4);
+        if (r.d.start) page.drawRectangle({ x: gx(r.d.start - 1), y: PH - y - rh + 3, width: Math.max(2, gx(r.d.end) - gx(r.d.start - 1)), height: rh - 6, color: ACC });
+        y += rh;
+      });
+      for (w = 0; w <= N; w += step) page.drawLine({ start: { x: gx(w), y: PH - top0 }, end: { x: gx(w), y: PH - y }, thickness: 0.3, color: MG });
+      page.drawRectangle({ x: MX, y: PH - y, width: CW, height: y - top0, borderColor: MG, borderWidth: 0.5 });
+      y += 16;
+      /* grafik kurva S */
+      var CH = 190; ensure(CH + 40);
+      var px = MX + 34, pw = CW - 44, ph = CH - 50, p0 = y + 18;
+      put('Kurva S rencana (kumulatif) dan rencana per minggu', MX, y, 9, FB);
+      var X = function (v) { return px + pw * v / N; }, Y = function (v) { return PH - (p0 + ph - Math.min(100, v) / 100 * ph); };
+      for (var g = 0; g <= 4; g++) {
+        page.drawLine({ start: { x: px, y: Y(g * 25) }, end: { x: px + pw, y: Y(g * 25) }, thickness: 0.4, color: MG });
+        put(g * 25 + '%', MX, p0 + ph - g * 25 / 100 * ph - 3, 7.5, FN, rgb(86, 106, 110), 'r', 30);
+      }
+      for (var i = 1; i <= N; i++) {
+        var bh = K.weekly[i] / 100 * ph;
+        if (bh > 0.2) page.drawRectangle({ x: X(i - 1) + pw / N * 0.15, y: Y(0), width: pw / N * 0.7, height: bh, color: rgb(207, 229, 233), borderColor: ACC, borderWidth: 0.4 });
+        if (i % step === 0 || i === 1) { var l2 = String(i), t2 = FN.widthOfTextAtSize(l2, 7.5); put(l2, X(i - 0.5) - t2 / 2, p0 + ph + 5, 7.5, FN, rgb(86, 106, 110)); }
+      }
+      for (i = 1; i <= N; i++) {
+        page.drawLine({ start: { x: X(i - 1), y: Y(K.cum[i - 1]) }, end: { x: X(i), y: Y(K.cum[i]) }, thickness: 1.8, color: ACC });
+        if (N <= 30) page.drawCircle({ x: X(i), y: Y(K.cum[i]), size: 2, color: ACC });
+      }
+      var xl = 'Minggu ke-', xw = FN.widthOfTextAtSize(xl, 7.5); put(xl, px + pw / 2 - xw / 2, p0 + ph + 17, 7.5, FN, rgb(86, 106, 110));
+      y = p0 + ph + 34;
+      if (K.nUnsched) { put('Catatan: ' + K.nUnsched + ' item (bobot ' + pct(K.unsched) + ') belum dijadwalkan, jadi kurva tidak mencapai 100%.', MX, y, 8, FI, rgb(138, 82, 0)); y += 14; }
+      /* tabel rencana per minggu */
+      var tcw = [CW - 2 * 110, 110, 110], tr = [];
+      for (w = 1; w <= N; w++) tr.push([{ t: 'Minggu ' + w, a: 'c' }, { t: pct(K.weekly[w]), a: 'r' }, { t: pct(K.cum[w]), a: 'r' }]);
+      ensure(60);
+      table(tcw, [[H('MINGGU'), H('RENCANA PER MINGGU'), H('KUMULATIF')]], tr);
+    })();
+    /* 3. Daftar harga dasar: upah, material, sewa alat */
+    var JT = { upah: 'UPAH', bahan: 'MATERIAL', alat: 'SEWA ALAT' }, bc = [32, CW - 32 - 56 - 110, 56, 110];
+    ['upah', 'bahan', 'alat'].forEach(function (j) {
+      newSection(j); title('DAFTAR HARGA DASAR ' + JT[j]);
+      var mrow = function (it, n) { return [{ t: String(n + 1), a: 'c' }, { t: it.nama || '-' }, { t: it.satuan || '', a: 'c' }, { t: pr(hargaM(it, p)), a: 'r' }]; }, rs = [];
+      if (j === 'bahan') {
+        S.katBahan.concat(['']).forEach(function (nm) {
+          var l = S.master.bahan.filter(function (m) { return (m.kat || '') === nm; });
+          if (!l.length) return;
+          rs.push([{ t: String(nm || 'Tanpa kategori').toUpperCase(), b: true, fill: MG, span: 4 }]);
+          l.forEach(function (it, n) { rs.push(mrow(it, n)); });
+        });
+      } else rs = S.master[j].map(mrow);
+      if (!rs.length) rs.push([{ t: 'Belum ada data.', i: true, span: 4 }]);
+      var LHd = function (t, a) { return { t: t, a: a, b: true, fill: LG }; };
+      table(bc, [[LHd('NO', 'c'), LHd('URAIAN', 'l'), LHd('SAT', 'c'), LHd('HARGA SATUAN (Rp)', 'r')]], rs);
+      y += 12;
+    });
+    /* 4. Lampiran AHSP */
+    var ahspP = ahspPakai(p);
+    if (ahspP.length) {
+      newSection('ahsp'); title('LAMPIRAN: ANALISA HARGA SATUAN PEKERJAAN (AHSP)');
+      var sub = 'Harga satuan sudah termasuk overhead sesuai persentase masing-masing AHSP.', sw = FN.widthOfTextAtSize(sub, 8.5);
+      put(sub, (PW - sw) / 2, y - 6, 8.5, FN); y += 8;
+      var JN = { upah: 'A. UPAH', bahan: 'B. MATERIAL', alat: 'C. SEWA ALAT' }, ac = [CW - 40 - 56 - 76 - 84, 40, 56, 76, 84];
+      ahspP.forEach(function (a) {
+        var bd = [], last = null, LGH = function (t, al) { return { t: t, a: al, b: true, fill: LG }; };
+        sortKom(a.komponen).forEach(function (k) {
+          if (k.jenis !== last) { last = k.jenis; bd.push([{ t: JN[k.jenis], b: true, span: 5 }]); }
+          var m = komRef(k), nm = m ? m.nama : k.nama, st = m ? m.satuan : k.satuan;
+          bd.push([{ t: nm || '-' }, { t: st, a: 'c' }, { t: pnum(k.koef), a: 'r' }, { t: pr(komHarga(k)), a: 'r' }, { t: pr(k.koef * komHarga(k)), a: 'r' }]);
+        });
+        if (!a.komponen.length) bd.push([{ t: 'Komponen belum diisi.', i: true, span: 5 }]);
+        bd.push([{ t: 'Jumlah', a: 'r', span: 4 }, { t: pr(ahspBase(a)), a: 'r' }]);
+        bd.push([{ t: 'Overhead ' + pnum(a.ohp || 0) + '%', a: 'r', span: 4 }, { t: pr(ahspOhp(a)), a: 'r' }]);
+        bd.push([{ t: 'Harga satuan', a: 'r', b: true, fill: LG, span: 4 }, { t: pr(ahspPrice(a)), a: 'r', b: true, fill: LG }]);
+        var su = String(a.satuan || '').replace(/\bm2\b/, 'm²').replace(/\bm3\b/, 'm³');
+        table(ac, [[{ t: (a.nama || 'Tanpa nama') + ' (per ' + su + ')', b: true, fill: NAVY, color: WHITE, span: 5 }], [LGH('Komponen', 'l'), LGH('Sat', 'c'), LGH('Koefisien', 'r'), LGH('Harga (Rp)', 'r'), LGH('Jumlah (Rp)', 'r')]], bd, true);
+        y += 10;
+      });
+    }
+    /* bagian yang tidak dipilih dibuang sebelum nomor halaman dipasang */
+    var total = doc.getPageCount(), ends = secStart.map(function (st, k) { return k + 1 < secStart.length ? secStart[k + 1] : total; }), ns = [], off = 0;
+    for (var k = secStart.length - 1; k >= 0; k--) { if (!pick[secKeys[k]]) for (var q = ends[k] - 1; q >= secStart[k]; q--) doc.removePage(q); }
+    secStart.forEach(function (st, k) { if (pick[secKeys[k]]) { ns.push(off); off += ends[k] - st; } });
+    secStart = ns;
+    var pgs = doc.getPages();
+    pgs.forEach(function (pg, i) {
+      page = pg;
+      /* nomor halaman dimulai dari 1 di setiap bagian (tab) */
+      var si = 0; secStart.forEach(function (st, k) { if (st <= i) si = k; });
+      var from = secStart[si] || 0, to = secStart[si + 1] === undefined ? pgs.length : secStart[si + 1];
+      put((p.nama || 'Proyek') + ' - Rencana Anggaran Biaya', MX, PH - 36, 7.5, FN, rgb(130, 140, 145));
+      put('Halaman ' + (i - from + 1) + ' dari ' + (to - from), MX, PH - 36, 7.5, FN, rgb(130, 140, 145), 'r', CW);
+    });
+    return await doc.save();
+  }
+  async function exportPDF(p) {
+    toast('Menyiapkan PDF...');
+    try { await loadPdfLib(); } catch (e) { toast('Pustaka PDF belum bisa dimuat. Coba lagi.'); return; }
+    var bytes;
+    try { bytes = await buildPDF(p); } catch (e) { toast('PDF gagal dibuat.'); if (window.console) console.error(e); return; }
+    save(slug(p.nama) + '-RAB.pdf', new Blob([bytes], { type: 'application/pdf' }));
+  }
+
+  /* ---------- Excel (.xlsx): Rekapitulasi, RAB, AHSP dengan rumus, ditulis langsung (pustaka JSZip) ---------- */
+  var zipLoading = null;
+  function loadZipLib() {
+    if (window.JSZip) return Promise.resolve();
+    if (!zipLoading) {
+      zipLoading = new Promise(function (ok, bad) {
+        var s = document.createElement('script'); s.src = 'jszip.min.js'; s.onload = ok; s.onerror = function () { bad(new Error('load')); };
+        document.head.appendChild(s);
+      }).catch(function (e) { zipLoading = null; throw e; });
+    }
+    return zipLoading;
+  }
+  function xesc(s) { return String(s == null ? '' : s).replace(/[\u0000-\u0008\u000B\u000C\u000E-\u001F]/g, '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
+  async function buildXLSX(p) {
+    var c = projCalc(p), NAVY = '16394A', LG = 'E8EEF0', BORD = 'BECAD0';
+    var RPF = 164; /* #,##0 dan "-" untuk nol */
+    var fonts = [], fills = ['<fill><patternFill patternType="none"/></fill>', '<fill><patternFill patternType="gray125"/></fill>'], borders = ['<border><left/><right/><top/><bottom/><diagonal/></border>'], xfs = [], reg = {};
+    function idx(list, xml) { var i = list.indexOf(xml); if (i < 0) { list.push(xml); i = list.length - 1; } return i; }
+    function sty(o) {
+      o = o || {}; var key = JSON.stringify(o); if (reg[key] !== undefined) return reg[key];
+      var f = '<font>' + (o.b ? '<b/>' : '') + (o.i ? '<i/>' : '') + '<sz val="' + (o.sz || 10) + '"/><color rgb="FF' + (o.col || '141E23') + '"/><name val="Arial"/></font>';
+      var fi = o.fill ? idx(fills, '<fill><patternFill patternType="solid"><fgColor rgb="FF' + o.fill + '"/><bgColor indexed="64"/></patternFill></fill>') : 0;
+      var bo = o.bd ? idx(borders, '<border>' + ['left', 'right', 'top', 'bottom'].map(function (s) { return '<' + s + ' style="thin"><color rgb="FF' + BORD + '"/></' + s + '>'; }).join('') + '<diagonal/></border>') : 0;
+      var xf = '<xf numFmtId="' + (o.rp ? RPF : o.pc ? 2 : 0) + '" fontId="' + idx(fonts, f) + '" fillId="' + fi + '" borderId="' + bo + '" xfId="0" applyFont="1" applyFill="1" applyBorder="1" applyNumberFormat="1" applyAlignment="1"><alignment horizontal="' + (o.h || 'general') + '" vertical="' + (o.top ? 'top' : 'center') + '"' + (o.wrap ? ' wrapText="1"' : '') + '/></xf>';
+      xfs.push(xf); reg[key] = xfs.length - 1; return reg[key];
+    }
+    sty({});
+    function Sheet(name, widths) { return { name: name, widths: widths, rows: {}, merges: [], ht: {}, titles: null }; }
+    function put(sh, r, col, cell) { (sh.rows[r] = sh.rows[r] || {})[col] = cell; }
+    function span(sh, r, c1, c2, cell, st) {
+      put(sh, r, c1, Object.assign({}, cell, { s: st })); for (var k = c1 + 1; k <= c2; k++) put(sh, r, k, { s: st });
+      if (c2 > c1) sh.merges.push(huruf(c1) + r + ':' + huruf(c2) + r);
+    }
+    var NUM = function (n, o) { return { v: n }; };
+    var HD = sty({ b: 1, col: 'FFFFFF', fill: NAVY, h: 'center', bd: 1, wrap: 1 }), HDL = sty({ b: 1, col: 'FFFFFF', fill: NAVY, h: 'left', bd: 1 });
+    var T = sty({ b: 1, sz: 14, h: 'center' }), SUBT = sty({ sz: 9, h: 'center', i: 1 });
+    function infoRows(sh, r0, last) {
+      var L = [['Pekerjaan', p.nama], ['Jenis Bangunan', p.jenis], ['Pemberi tugas', p.pemilik], ['Perencana', p.perencana], ['Tahun Anggaran', String(p.tahun || '')], ['Luas Bangunan', pnum(p.luas || 0) + ' m2'], ['Lokasi', p.lokasi]];
+      L.forEach(function (x, i) { span(sh, r0 + i, 1, last, { rich: [[x[0] + ' : ', 1], [x[1] || '-', 0]] }, sty({})); });
+      return r0 + L.length;
+    }
+    /* ---- Upah, Material, Sewa Alat ---- */
+    var masterRef = {}, JS = { upah: ['Upah', 'DAFTAR HARGA DASAR UPAH'], bahan: ['Material', 'DAFTAR HARGA DASAR MATERIAL'], alat: ['Sewa Alat', 'DAFTAR HARGA DASAR SEWA ALAT'] }, msheets = [];
+    ['upah', 'bahan', 'alat'].forEach(function (j) {
+      var sm = Sheet(JS[j][0], [7, 48, 11, 21]), z = 1;
+      span(sm, z, 1, 4, { t: JS[j][1] }, T); z += 2;
+      ['NO', 'URAIAN', 'SAT', 'HARGA SATUAN (Rp)'].forEach(function (t, i) { put(sm, z, i + 1, { t: t, s: HD }); }); z++;
+      var xl = [];
+      if (j === 'bahan') {
+        S.katBahan.concat(['']).forEach(function (nm) {
+          var l = S.master.bahan.filter(function (m) { return (m.kat || '') === nm; });
+          if (l.length) { xl.push({ kat: nm || 'Tanpa kategori' }); l.forEach(function (m, n) { xl.push({ it: m, n: n }); }); }
+        });
+      } else S.master[j].forEach(function (m, n) { xl.push({ it: m, n: n }); });
+      xl.forEach(function (e) {
+        if (e.kat) { span(sm, z, 1, 4, { t: e.kat.toUpperCase() }, sty({ b: 1, bd: 1, fill: 'C9D6DA' })); z++; return; }
+        var it = e.it, n = e.n;
+        put(sm, z, 1, { v: n + 1, s: sty({ bd: 1, h: 'center' }) }); put(sm, z, 2, { t: it.nama || '-', s: sty({ bd: 1, wrap: 1 }) }); put(sm, z, 3, { t: it.satuan || '', s: sty({ bd: 1, h: 'center' }) }); put(sm, z, 4, { v: hargaM(it, p), s: sty({ bd: 1, h: 'right', rp: 1 }) });
+        masterRef[it.id] = "'" + JS[j][0] + "'!D" + z; z++;
+      });
+      if (!S.master[j].length) span(sm, z, 1, 4, { t: 'Belum ada data.' }, sty({ i: 1, bd: 1 }));
+      sm.key = j; msheets.push(sm);
+    });
+    /* ---- AHSP ---- */
+    var sa = Sheet('AHSP', [46, 9, 13, 17, 19]), r = 1, hargaRow = {};
+    span(sa, r, 1, 5, { t: 'LAMPIRAN: ANALISA HARGA SATUAN PEKERJAAN (AHSP)' }, T); r++;
+    span(sa, r, 1, 5, { t: 'Harga satuan sudah termasuk overhead sesuai persentase masing-masing AHSP.' }, SUBT); r += 2;
+    var JN = { upah: 'A. UPAH', bahan: 'B. MATERIAL', alat: 'C. SEWA ALAT' };
+    var cT = sty({ bd: 1, wrap: 1 }), cC = sty({ bd: 1, h: 'center' }), cN = sty({ bd: 1, h: 'right' }), cR = sty({ bd: 1, h: 'right', rp: 1 });
+    ahspPakai(p).forEach(function (a) {
+      span(sa, r, 1, 5, { t: (a.nama || 'Tanpa nama') + ' (per ' + (a.satuan || '') + ')' }, HDL); r++;
+      var LH = sty({ b: 1, fill: LG, bd: 1 }), LHC = sty({ b: 1, fill: LG, bd: 1, h: 'center' }), LHR = sty({ b: 1, fill: LG, bd: 1, h: 'right' });
+      ['Komponen', 'Sat', 'Koefisien', 'Harga (Rp)', 'Jumlah (Rp)'].forEach(function (t, i) { put(sa, r, i + 1, { t: t, s: i === 0 ? LH : i === 1 ? LHC : LHR }); }); r++;
+      var last = null, first = 0, endk = 0;
+      sortKom(a.komponen).forEach(function (k) {
+        if (k.jenis !== last) { last = k.jenis; span(sa, r, 1, 5, { t: JN[k.jenis] }, sty({ b: 1, bd: 1 })); r++; }
+        var m = komRef(k), hg = komHarga(k);
+        if (!first) first = r; endk = r;
+        put(sa, r, 1, { t: m ? m.nama : k.nama, s: cT }); put(sa, r, 2, { t: m ? m.satuan : k.satuan, s: cC }); put(sa, r, 3, { v: k.koef, s: cN });
+        put(sa, r, 4, m && masterRef[m.id] ? { f: masterRef[m.id], v: hg, s: cR } : { v: hg, s: cR }); put(sa, r, 5, { f: 'C' + r + '*D' + r, v: k.koef * hg, s: cR }); r++;
+      });
+      if (!a.komponen.length) { span(sa, r, 1, 5, { t: 'Komponen belum diisi.' }, sty({ i: 1, bd: 1 })); r++; }
+      var jr = r, bs = ahspBase(a), oh = ahspOhp(a), RB = sty({ bd: 1, h: 'right' }), RBB = sty({ b: 1, bd: 1, h: 'right', fill: LG }), RRB = sty({ b: 1, bd: 1, h: 'right', rp: 1, fill: LG });
+      span(sa, r, 1, 4, { t: 'Jumlah' }, RB); put(sa, r, 5, first ? { f: 'ROUND(SUM(E' + first + ':E' + endk + '),0)', v: bs, s: cR } : { v: 0, s: cR }); r++;
+      span(sa, r, 1, 4, { t: 'Overhead ' + pnum(a.ohp || 0) + '%' }, RB); put(sa, r, 5, { f: 'ROUND(E' + jr + '*' + (a.ohp || 0) + '/100,0)', v: oh, s: cR }); r++;
+      span(sa, r, 1, 4, { t: 'Harga satuan' }, RBB); put(sa, r, 5, { f: 'E' + jr + '+E' + (jr + 1), v: bs + oh, s: RRB }); hargaRow[a.id] = r; r += 2;
+    });
+    /* ---- RAB ---- */
+    var sr = Sheet('RAB', [7, 52, 9, 11, 19, 21]), q = 1, subRow = [], itemRow = {};
+    span(sr, q, 1, 6, { t: 'RENCANA ANGGARAN BIAYA' }, T); q += 2; q = infoRows(sr, q, 6) + 1;
+    ['NO', 'URAIAN PEKERJAAN', 'SAT', 'VOLUME', 'HARGA SATUAN (Rp)', 'JUMLAH HARGA (Rp)'].forEach(function (t, i) { put(sr, q, i + 1, { t: t, s: HD }); }); sr.titles = q; q++;
+    var DV = sty({ b: 1, fill: LG, bd: 1 }), DVC = sty({ b: 1, fill: LG, bd: 1, h: 'center' });
+    p.divisi.forEach(function (d, i) {
+      var L = huruf(i + 1); put(sr, q, 1, { t: L, s: DVC }); span(sr, q, 2, 6, { t: String(d.nama || '').toUpperCase() }, DV); q++;
+      var f1 = q;
+      d.items.forEach(function (it, n) {
+        var a = it.ahsp ? ahspById(it.ahsp) : null, hs = itemPrice(it), jm = itemTotal(it);
+        put(sr, q, 1, { v: n + 1, s: cC }); put(sr, q, 2, { t: itemUraian(it), s: cT }); put(sr, q, 3, { t: itemSatuan(it), s: cC }); put(sr, q, 4, { v: it.volume, s: cN });
+        put(sr, q, 5, a && hargaRow[a.id] ? { f: 'AHSP!E' + hargaRow[a.id], v: hs, s: cR } : { v: hs, s: cR });
+        put(sr, q, 6, { f: 'ROUND(D' + q + '*E' + q + ',0)', v: jm, s: cR }); itemRow[it.id] = q; q++;
+      });
+      var sb = sty({ b: 1, bd: 1, h: 'right' }), sbr = sty({ b: 1, bd: 1, h: 'right', rp: 1 });
+      span(sr, q, 1, 5, { t: 'Sub Total ' + L }, sb); put(sr, q, 6, d.items.length ? { f: 'SUM(F' + f1 + ':F' + (q - 1) + ')', v: divTotal(d), s: sbr } : { v: 0, s: sbr }); subRow.push(q); q += 1;
+    });
+    /* ---- BQ ---- */
+    var sb = Sheet('BQ', [7, 52, 9, 11, 19, 21]), bq = 1, bsub = [];
+    span(sb, bq, 1, 6, { t: 'BILL OF QUANTITY (BQ)' }, T); bq += 2; bq = infoRows(sb, bq, 6);
+    span(sb, bq, 1, 6, { t: 'Isi kolom harga satuan (kuning). Jumlah harga dan sub total dihitung otomatis.' }, SUBT); bq += 2;
+    ['NO', 'URAIAN PEKERJAAN', 'SAT', 'VOLUME', 'HARGA SATUAN (Rp)', 'JUMLAH HARGA (Rp)'].forEach(function (t, i) { put(sb, bq, i + 1, { t: t, s: HD }); }); sb.titles = bq; bq++;
+    var YEL = sty({ bd: 1, h: 'right', rp: 1, fill: 'FFF8DC' });
+    p.divisi.forEach(function (d, i) {
+      var L = huruf(i + 1); put(sb, bq, 1, { t: L, s: DVC }); span(sb, bq, 2, 6, { t: String(d.nama || '').toUpperCase() }, DV); bq++;
+      var f1 = bq;
+      d.items.forEach(function (it, n) {
+        put(sb, bq, 1, { v: n + 1, s: cC }); put(sb, bq, 2, { t: itemUraian(it), s: cT }); put(sb, bq, 3, { t: itemSatuan(it), s: cC });
+        put(sb, bq, 4, { f: 'RAB!D' + itemRow[it.id], v: it.volume, s: cN }); put(sb, bq, 5, { s: YEL });
+        put(sb, bq, 6, { f: 'IF(E' + bq + '="","",ROUND(D' + bq + '*E' + bq + ',0))', str: 1, s: cR }); bq++;
+      });
+      var sbS = sty({ b: 1, bd: 1, h: 'right' }), sbR = sty({ b: 1, bd: 1, h: 'right', rp: 1 });
+      span(sb, bq, 1, 5, { t: 'Sub Total ' + L }, sbS); put(sb, bq, 6, d.items.length ? { f: 'SUM(F' + f1 + ':F' + (bq - 1) + ')', v: 0, s: sbR } : { v: 0, s: sbR }); bsub.push(bq); bq++;
+    });
+    span(sb, bq, 1, 5, { t: 'JUMLAH' }, sty({ b: 1, bd: 1, h: 'right', fill: LG })); put(sb, bq, 6, { f: 'SUM(' + bsub.map(function (r) { return 'F' + r; }).join(',') + ')', v: 0, s: sty({ b: 1, bd: 1, h: 'right', rp: 1, fill: LG }) });
+    /* ---- RKS ---- */
+    var skr = Sheet('RKS', [6, 6, 112]), rk = 1, rh = function (t) { return Math.min(409, Math.max(15, Math.ceil(String(t).length / 104) * 13 + 4)); };
+    span(skr, rk, 1, 3, { t: 'RENCANA KERJA DAN SYARAT-SYARAT (RKS)' }, T); rk += 2; rk = infoRows(skr, rk, 3) + 1;
+    var RB1 = sty({ b: 1, bd: 1, fill: LG, h: 'center' }), RBC = sty({ b: 1, bd: 1, fill: LG, h: 'center' }), RSUB = sty({ b: 1 }), RSC = sty({ b: 1, h: 'center' });
+    var RTX = sty({ wrap: 1, top: 1 }), anyR = false;
+    var blocks = function (text) {
+      rksBlocks(text).forEach(function (bl) {
+        if (bl.m) { put(skr, rk, 2, { t: bl.m, s: sty({ h: 'right', top: 1 }) }); put(skr, rk, 3, { t: bl.t, s: RTX }); }
+        else span(skr, rk, 2, 3, { t: '\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0' + bl.t }, RTX);
+        skr.ht[rk] = rh(bl.t); rk++;
+      });
+    };
+    if (String(p.rksUmum || '').trim()) { anyR = true; span(skr, rk, 1, 3, { t: 'KETENTUAN UMUM' }, RB1); skr.ht[rk] = 24; rk++; blocks(p.rksUmum); rk++; }
+    p.divisi.forEach(function (d, i) {
+      var f3 = [['Lingkup pekerjaan', d.rksLingkup], ['Persyaratan bahan', d.rksBahan], ['Pelaksanaan', d.rksLaksana]].filter(function (x) { return x[1] && String(x[1]).trim(); });
+      if (!f3.length) return; anyR = true;
+      put(skr, rk, 1, { t: huruf(i + 1), s: RBC }); span(skr, rk, 2, 3, { t: String(d.nama || '').toUpperCase() }, RB1); skr.ht[rk] = 24; rk++;
+      f3.forEach(function (x, k) { put(skr, rk, 1, { t: (k + 1) + '.', s: RSC }); span(skr, rk, 2, 3, { t: x[0] }, RSUB); rk++; blocks(x[1]); });
+      rk++;
+    });
+    if (!anyR) span(skr, rk, 1, 3, { t: 'RKS belum diisi. Isi di tab RKS pada aplikasi.' }, sty({ i: 1 }));
+    /* ---- Kurva S ---- */
+    var K = kurvaCalc(p), NW = K.N, skv = Sheet('Kurva S', [6, 44, 18, 11, 9, 9].concat(Array.apply(null, Array(NW)).map(function () { return 7; }))), kr = 1, W0 = 7;
+    var lastC = 6 + NW, PC = sty({ bd: 1, h: 'right', pc: 1 }), EDT = sty({ bd: 1, h: 'center', fill: 'FFF8DC' });
+    span(skv, kr, 1, 6, { t: 'KURVA S' }, T); kr += 2; kr = infoRows(skv, kr, 6);
+    span(skv, kr, 1, 6, { rich: [['Durasi proyek : ', 1], [NW + ' minggu', 0]] }, sty({})); kr += 2;
+    var totRow = kr;
+    span(skv, kr, 1, 2, { t: 'TOTAL RAB (sebelum PPN)' }, sty({ b: 1, bd: 1, fill: LG })); put(skv, kr, 3, { f: 'SUM(' + subRow.map(function (r) { return 'RAB!F' + r; }).join(',') + ')', v: K.sub, s: sty({ b: 1, bd: 1, h: 'right', rp: 1, fill: LG }) }); kr += 2;
+    var hr = kr;
+    ['NO', 'URAIAN PEKERJAAN', 'JUMLAH HARGA (Rp)', 'BOBOT (%)', 'MULAI MINGGU', 'DURASI (MGG)'].forEach(function (t, i) { put(skv, kr, i + 1, { t: t, s: HD }); });
+    for (var wk = 1; wk <= NW; wk++) put(skv, kr, 6 + wk, { v: wk, s: sty({ b: 1, col: 'FFFFFF', fill: NAVY, h: 'center', bd: 1 }) });
+    skv.ht[kr] = 30; kr++;
+    var firstK = kr, DVK = sty({ b: 1, fill: LG, bd: 1 }), DVKC = sty({ b: 1, fill: LG, bd: 1, h: 'center' });
+    p.divisi.forEach(function (d, i) {
+      put(skv, kr, 1, { t: huruf(i + 1), s: DVKC }); span(skv, kr, 2, 6, { t: String(d.nama || '').toUpperCase() }, DVK);
+      for (var c2 = 7; c2 <= lastC; c2++) put(skv, kr, c2, { s: DVK }); kr++;
+      d.items.forEach(function (it, n) {
+        var tot = itemTotal(it), b = K.sub ? tot / K.sub * 100 : 0, m = Math.round(it.mulai) || 0, u = Math.round(it.durasi) || 0;
+        put(skv, kr, 1, { v: n + 1, s: cC }); put(skv, kr, 2, { t: itemUraian(it), s: cT });
+        put(skv, kr, 3, { f: 'RAB!F' + itemRow[it.id], v: tot, s: cR });
+        put(skv, kr, 4, { f: 'IF($C$' + totRow + '=0,0,C' + kr + '/$C$' + totRow + '*100)', v: b, s: PC });
+        put(skv, kr, 5, { v: m, s: EDT }); put(skv, kr, 6, { v: u, s: EDT });
+        for (var w2 = 1; w2 <= NW; w2++) {
+          var cl = huruf(6 + w2), on = m >= 1 && u >= 1 && w2 >= m && w2 < m + u;
+          put(skv, kr, 6 + w2, { f: 'IF(AND($E' + kr + '>0,$F' + kr + '>0,' + cl + '$' + hr + '>=$E' + kr + ',' + cl + '$' + hr + '<$E' + kr + '+$F' + kr + '),$D' + kr + '/$F' + kr + ',0)', v: on ? b / u : 0, s: PC });
+        }
+        kr++;
+      });
+    });
+    var lastK = kr - 1, rowW = kr, rowC = kr + 1, TL = sty({ b: 1, bd: 1, h: 'right', fill: LG }), TP = sty({ b: 1, bd: 1, h: 'right', pc: 1, fill: LG });
+    span(skv, rowW, 1, 3, { t: 'RENCANA PER MINGGU (%)' }, TL); put(skv, rowW, 4, { f: 'SUM(D' + firstK + ':D' + lastK + ')', v: K.sub ? 100 : 0, s: TP }); span(skv, rowW, 5, 6, { t: '' }, TL);
+    span(skv, rowC, 1, 6, { t: 'KUMULATIF (%)' }, TL);
+    for (wk = 1; wk <= NW; wk++) {
+      var cl2 = huruf(6 + wk);
+      put(skv, rowW, 6 + wk, { f: 'SUM(' + cl2 + firstK + ':' + cl2 + lastK + ')', v: K.weekly[wk], s: TP });
+      put(skv, rowC, 6 + wk, { f: wk === 1 ? cl2 + rowW : huruf(5 + wk) + rowC + '+' + cl2 + rowW, v: K.cum[wk], s: TP });
+    }
+    skv.chart = { cat: "'Kurva S'!$" + huruf(W0) + '$' + hr + ':$' + huruf(lastC) + '$' + hr, w: "'Kurva S'!$" + huruf(W0) + '$' + rowW + ':$' + huruf(lastC) + '$' + rowW, c: "'Kurva S'!$" + huruf(W0) + '$' + rowC + ':$' + huruf(lastC) + '$' + rowC, row: rowC + 1 };
+    /* ---- Rekapitulasi ---- */
+    var sk = Sheet('Rekapitulasi', [8, 56, 24]), k = 1;
+    span(sk, k, 1, 3, { t: 'REKAPITULASI RENCANA ANGGARAN BIAYA' }, T); k += 2; k = infoRows(sk, k, 3) + 1;
+    ['NO', 'URAIAN PEKERJAAN', 'JUMLAH HARGA (Rp)'].forEach(function (t, i) { put(sk, k, i + 1, { t: t, s: HD }); }); k++;
+    var k1 = k;
+    p.divisi.forEach(function (d, i) { put(sk, k, 1, { t: huruf(i + 1), s: cC }); put(sk, k, 2, { t: String(d.nama || '').toUpperCase(), s: cT }); put(sk, k, 3, { f: 'RAB!F' + subRow[i], v: divTotal(d), s: cR }); k++; });
+    var BL = sty({ b: 1, bd: 1, h: 'right', fill: LG }), BR = sty({ b: 1, bd: 1, h: 'right', fill: LG, rp: 1 }), PL = sty({ bd: 1, h: 'right' });
+    var rj = k; span(sk, k, 1, 2, { t: 'JUMLAH' }, BL); put(sk, k, 3, p.divisi.length ? { f: 'SUM(C' + k1 + ':C' + (k - 1) + ')', v: c.sub, s: BR } : { v: 0, s: BR }); k++;
+    span(sk, k, 1, 2, { t: 'PPN ' + pnum(p.ppn || 0) + '%' }, PL); put(sk, k, 3, { f: 'ROUND(C' + rj + '*' + (p.ppn || 0) + '/100,0)', v: c.ppn, s: cR }); k++;
+    span(sk, k, 1, 2, { t: 'TOTAL' }, BL); put(sk, k, 3, { f: 'C' + rj + '+C' + (rj + 1), v: c.total, s: BR }); k++;
+    span(sk, k, 1, 2, { t: 'TOTAL DIBULATKAN' }, BL); put(sk, k, 3, { f: 'ROUND(C' + (rj + 2) + '/1000,0)*1000', v: c.bulat, s: BR }); k += 2;
+    var tb = terbilang(c.bulat); tb = tb.charAt(0).toUpperCase() + tb.slice(1);
+    span(sk, k, 1, 3, { rich: [['Terbilang: ', 1], [tb, 0]] }, sty({ i: 1, wrap: 1 })); sk.ht[k] = 28; k += 2;
+    var CT = sty({ h: 'center' });
+    put(sk, k, 2, { t: 'Dibuat oleh,', s: CT }); put(sk, k, 3, { t: 'Disetujui oleh,', s: CT }); k += 5;
+    var CTB = sty({ h: 'center', b: 1 }), sgn = function (n) { return n && n.trim() ? n.trim() : '....................................'; };
+    put(sk, k, 2, { t: sgn(p.perencana), s: CTB }); put(sk, k, 3, { t: sgn(p.pemilik), s: CTB }); k++;
+    put(sk, k, 2, { t: 'Perencana', s: CT }); put(sk, k, 3, { t: 'Pemberi tugas', s: CT });
+    /* ---- tulis berkas ---- */
+    sk.key = 'rekap'; sr.key = 'rab'; sb.key = 'bq'; skr.key = 'rks'; skv.key = 'kurva'; sa.key = 'ahsp';
+    var sheets = [sk, sr, sb, skr, skv].concat(msheets, [sa]).filter(function (sh) { return PICK[sh.key]; });
+    /* rumus yang menunjuk lembar yang tidak dipilih diganti nilainya, supaya tidak ada tautan rusak */
+    var gone = [sk, sr, sb, skr, skv, sa].concat(msheets).filter(function (sh) { return sheets.indexOf(sh) < 0; }).map(function (sh) { return sh.name; });
+    if (gone.length) sheets.forEach(function (sh) {
+      Object.keys(sh.rows).forEach(function (rn) { Object.keys(sh.rows[rn]).forEach(function (cn) {
+        var c = sh.rows[rn][cn];
+        if (c.f && gone.some(function (g) { return c.f.indexOf(g + '!') >= 0 || c.f.indexOf("'" + g + "'!") >= 0; })) delete c.f;
+      }); });
+    });
+    var hasK = sheets.indexOf(skv) >= 0, rabIdx = sheets.indexOf(sr);
+    function cellXml(rn, cn, cell) {
+      var ref = huruf(cn) + rn, s = cell.s ? ' s="' + cell.s + '"' : '';
+      if (cell.rich) return '<c r="' + ref + '"' + s + ' t="inlineStr"><is>' + cell.rich.map(function (x) { return '<r><rPr>' + (x[1] ? '<b/>' : '') + '<sz val="10"/><color rgb="FF141E23"/><rFont val="Arial"/></rPr><t xml:space="preserve">' + xesc(x[0]) + '</t></r>'; }).join('') + '</is></c>';
+      if (cell.f && cell.str) return '<c r="' + ref + '"' + s + ' t="str"><f>' + xesc(cell.f) + '</f><v></v></c>';
+      if (cell.f) return '<c r="' + ref + '"' + s + '><f>' + xesc(cell.f) + '</f><v>' + cell.v + '</v></c>';
+      if (cell.v !== undefined) return '<c r="' + ref + '"' + s + '><v>' + cell.v + '</v></c>';
+      if (cell.t !== undefined) return '<c r="' + ref + '"' + s + ' t="inlineStr"><is><t xml:space="preserve">' + xesc(cell.t) + '</t></is></c>';
+      return '<c r="' + ref + '"' + s + '/>';
+    }
+    function sheetXml(sh) {
+      var rs = Object.keys(sh.rows).map(Number).sort(function (a, b) { return a - b; });
+      var data = rs.map(function (rn) {
+        var cs = Object.keys(sh.rows[rn]).map(Number).sort(function (a, b) { return a - b; });
+        return '<row r="' + rn + '"' + (sh.ht[rn] ? ' ht="' + sh.ht[rn] + '" customHeight="1"' : '') + '>' + cs.map(function (cn) { return cellXml(rn, cn, sh.rows[rn][cn]); }).join('') + '</row>';
+      }).join('');
+      return '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"><sheetPr><pageSetUpPr fitToPage="1"/></sheetPr><sheetViews><sheetView showGridLines="0" workbookViewId="0"/></sheetViews><sheetFormatPr defaultRowHeight="15"/><cols>' +
+        sh.widths.map(function (w, i) { return '<col min="' + (i + 1) + '" max="' + (i + 1) + '" width="' + w + '" customWidth="1"/>'; }).join('') + '</cols><sheetData>' + data + '</sheetData>' +
+        (sh.merges.length ? '<mergeCells count="' + sh.merges.length + '">' + sh.merges.map(function (m) { return '<mergeCell ref="' + m + '"/>'; }).join('') + '</mergeCells>' : '') +
+        '<pageMargins left="0.6" right="0.6" top="0.7" bottom="0.7" header="0.3" footer="0.3"/><pageSetup paperSize="9" useFirstPageNumber="1" firstPageNumber="1" orientation="' + (sh.chart ? 'landscape' : 'portrait') + '" fitToWidth="1" fitToHeight="' + (sh.chart ? 1 : 0) + '"/><headerFooter><oddFooter>&amp;L&amp;8' + xesc(String(p.nama || 'Proyek').replace(/&/g, '&&')) + ' - ' + xesc(sh.name) + '&amp;R&amp;8Halaman &amp;P</oddFooter></headerFooter>' + (sh.chart ? '<drawing r:id="rId1"/>' : '') + '</worksheet>';
+    }
+    var NS = 'http://schemas.openxmlformats.org/spreadsheetml/2006/main', zip = new window.JSZip();
+    zip.file('[Content_Types].xml', '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/xl/workbook.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml"/><Override PartName="/xl/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.styles+xml"/>' +
+      sheets.map(function (s, i) { return '<Override PartName="/xl/worksheets/sheet' + (i + 1) + '.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/>'; }).join('') + '' + (hasK ? '<Override PartName="/xl/drawings/drawing1.xml" ContentType="application/vnd.openxmlformats-officedocument.drawing+xml"/><Override PartName="/xl/charts/chart1.xml" ContentType="application/vnd.openxmlformats-officedocument.drawingml.chart+xml"/>' : '') + '</Types>');
+    zip.file('_rels/.rels', '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="xl/workbook.xml"/></Relationships>');
+    zip.file('xl/_rels/workbook.xml.rels', '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">' +
+      sheets.map(function (s, i) { return '<Relationship Id="rId' + (i + 1) + '" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet' + (i + 1) + '.xml"/>'; }).join('') +
+      '<Relationship Id="rId99" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/></Relationships>');
+    zip.file('xl/workbook.xml', '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><workbook xmlns="' + NS + '" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"><sheets>' +
+      sheets.map(function (s, i) { return '<sheet name="' + s.name + '" sheetId="' + (i + 1) + '" r:id="rId' + (i + 1) + '"/>'; }).join('') + '</sheets>' + (rabIdx >= 0 ? '<definedNames><definedName name="_xlnm.Print_Titles" localSheetId="' + rabIdx + '">RAB!$' + sr.titles + ':$' + sr.titles + '</definedName></definedNames>' : '') + '<calcPr calcId="191029" fullCalcOnLoad="1"/></workbook>');
+    zip.file('xl/styles.xml', '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><styleSheet xmlns="' + NS + '"><numFmts count="1"><numFmt numFmtId="' + RPF + '" formatCode="#,##0;\\-#,##0;&quot;-&quot;"/></numFmts><fonts count="' + fonts.length + '">' + fonts.join('') + '</fonts><fills count="' + fills.length + '">' + fills.join('') + '</fills><borders count="' + borders.length + '">' + borders.join('') + '</borders><cellStyleXfs count="1"><xf numFmtId="0" fontId="0" fillId="0" borderId="0"/></cellStyleXfs><cellXfs count="' + xfs.length + '">' + xfs.join('') + '</cellXfs><cellStyles count="1"><cellStyle name="Normal" xfId="0" builtinId="0"/></cellStyles></styleSheet>');
+    if (hasK) {
+    var kIdx = sheets.indexOf(skv) + 1, ch = skv.chart, C_NS = 'http://schemas.openxmlformats.org/drawingml/2006/chart', A_NS = 'http://schemas.openxmlformats.org/drawingml/2006/main', R_NS = 'http://schemas.openxmlformats.org/officeDocument/2006/relationships';
+    zip.file('xl/worksheets/_rels/sheet' + kIdx + '.xml.rels', '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/drawing" Target="../drawings/drawing1.xml"/></Relationships>');
+    zip.file('xl/drawings/_rels/drawing1.xml.rels', '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/chart" Target="../charts/chart1.xml"/></Relationships>');
+    zip.file('xl/drawings/drawing1.xml', '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><xdr:wsDr xmlns:xdr="http://schemas.openxmlformats.org/drawingml/2006/spreadsheetDrawing" xmlns:a="' + A_NS + '"><xdr:twoCellAnchor><xdr:from><xdr:col>1</xdr:col><xdr:colOff>0</xdr:colOff><xdr:row>' + (ch.row + 1) + '</xdr:row><xdr:rowOff>0</xdr:rowOff></xdr:from><xdr:to><xdr:col>' + Math.min(lastC, 16) + '</xdr:col><xdr:colOff>0</xdr:colOff><xdr:row>' + (ch.row + 22) + '</xdr:row><xdr:rowOff>0</xdr:rowOff></xdr:to><xdr:graphicFrame macro=""><xdr:nvGraphicFramePr><xdr:cNvPr id="2" name="Kurva S"/><xdr:cNvGraphicFramePr/></xdr:nvGraphicFramePr><xdr:xfrm><a:off x="0" y="0"/><a:ext cx="0" cy="0"/></xdr:xfrm><a:graphic><a:graphicData uri="' + C_NS + '"><c:chart xmlns:c="' + C_NS + '" xmlns:r="' + R_NS + '" r:id="rId1"/></a:graphicData></a:graphic></xdr:graphicFrame><xdr:clientData/></xdr:twoCellAnchor></xdr:wsDr>');
+    var axT = function (t, rot) { return '<c:title><c:tx><c:rich><a:bodyPr' + (rot ? ' rot="-5400000" vert="horz"' : '') + '/><a:p><a:pPr><a:defRPr sz="900" b="0"/></a:pPr><a:r><a:rPr lang="id-ID" sz="900" b="0"/><a:t>' + t + '</a:t></a:r></a:p></c:rich></c:tx><c:overlay val="0"/></c:title>'; };
+    var ser = function (i, nm, ref, extra, tail) { return '<c:ser><c:idx val="' + i + '"/><c:order val="' + i + '"/><c:tx><c:v>' + nm + '</c:v></c:tx>' + extra + '<c:cat><c:numRef><c:f>' + xesc(ch.cat) + '</c:f></c:numRef></c:cat><c:val><c:numRef><c:f>' + xesc(ref) + '</c:f></c:numRef></c:val>' + tail + '</c:ser>'; };
+    zip.file('xl/charts/chart1.xml', '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><c:chartSpace xmlns:c="' + C_NS + '" xmlns:a="' + A_NS + '" xmlns:r="' + R_NS + '"><c:roundedCorners val="0"/><c:chart><c:title><c:tx><c:rich><a:bodyPr/><a:p><a:pPr><a:defRPr sz="1200" b="1"/></a:pPr><a:r><a:rPr lang="id-ID" sz="1200" b="1"/><a:t>Kurva S</a:t></a:r></a:p></c:rich></c:tx><c:overlay val="0"/></c:title><c:autoTitleDeleted val="0"/><c:plotArea><c:layout/>' +
+      '<c:barChart><c:barDir val="col"/><c:grouping val="clustered"/><c:varyColors val="0"/>' + ser(0, 'Rencana per minggu (%)', ch.w, '<c:spPr><a:solidFill><a:srgbClr val="9FCBD3"/></a:solidFill></c:spPr><c:invertIfNegative val="0"/>', '') + '<c:gapWidth val="60"/><c:axId val="111111"/><c:axId val="222222"/></c:barChart>' +
+      '<c:lineChart><c:grouping val="standard"/><c:varyColors val="0"/>' + ser(1, 'Kumulatif (%)', ch.c, '<c:spPr><a:ln w="28575"><a:solidFill><a:srgbClr val="0B6B7A"/></a:solidFill></a:ln></c:spPr><c:marker><c:symbol val="circle"/><c:size val="5"/><c:spPr><a:solidFill><a:srgbClr val="0B6B7A"/></a:solidFill></c:spPr></c:marker>', '<c:smooth val="0"/>') + '<c:marker val="1"/><c:axId val="111111"/><c:axId val="222222"/></c:lineChart>' +
+      '<c:catAx><c:axId val="111111"/><c:scaling><c:orientation val="minMax"/></c:scaling><c:delete val="0"/><c:axPos val="b"/>' + axT('Minggu ke-') + '<c:numFmt formatCode="General" sourceLinked="0"/><c:majorTickMark val="out"/><c:minorTickMark val="none"/><c:tickLblPos val="nextTo"/><c:crossAx val="222222"/><c:crosses val="autoZero"/><c:auto val="1"/><c:lblAlgn val="ctr"/><c:lblOffset val="100"/><c:noMultiLvlLbl val="0"/></c:catAx>' +
+      '<c:valAx><c:axId val="222222"/><c:scaling><c:orientation val="minMax"/><c:max val="100"/><c:min val="0"/></c:scaling><c:delete val="0"/><c:axPos val="l"/><c:majorGridlines/>' + axT('Persen (%)', true) + '<c:numFmt formatCode="0" sourceLinked="0"/><c:majorTickMark val="out"/><c:minorTickMark val="none"/><c:tickLblPos val="nextTo"/><c:crossAx val="111111"/><c:crosses val="autoZero"/><c:crossBetween val="between"/><c:majorUnit val="25"/></c:valAx>' +
+      '</c:plotArea><c:legend><c:legendPos val="b"/><c:overlay val="0"/></c:legend><c:plotVisOnly val="1"/><c:dispBlanksAs val="gap"/></c:chart></c:chartSpace>');
+    }
+    sheets.forEach(function (s, i) { zip.file('xl/worksheets/sheet' + (i + 1) + '.xml', sheetXml(s)); });
+    return zip.generateAsync({ type: 'blob', compression: 'DEFLATE', mimeType: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+  }
+  async function exportXLSX(p) {
+    toast('Menyiapkan file Excel...');
+    try { await loadZipLib(); } catch (e) { toast('Pustaka Excel belum bisa dimuat. Coba lagi.'); return; }
+    var blob;
+    try { blob = await buildXLSX(p); } catch (e) { toast('File Excel gagal dibuat.'); if (window.console) console.error(e); return; }
+    save(slug(p.nama) + '-RAB.xlsx', blob);
+  }
+
+  /* ---------- Bagikan sebagai berkas .html mandiri: aplikasi + pustaka + semua data dalam satu file ---------- */
+  var HTML_RESET = '<style>\n/* Dasar halaman versi mandiri, setara dengan dasar halaman di Claude. */\n:root { color-scheme: light; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); }\nbody { margin: 0; font: 14px system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }\nimg { max-width: 100%; }\n[hidden] { display: none !important; }\n</style>\n';
+  function jsInline(t) { return String(t).replace(/<\/script/gi, '<\\/script'); }
+  async function readLib(name, file) {
+    var el = document.querySelector('script[data-lib="' + name + '"]');
+    if (el) return el.textContent;
+    var r = await fetch(file); if (!r.ok) throw new Error('lib'); return await r.text();
+  }
+  async function buildStandaloneHTML() {
+    var app = Array.prototype.filter.call(document.scripts, function (sc) { return !sc.src && !sc.dataset.lib && sc.textContent.indexOf("var KEY = 'rab-gedung-v1'") >= 0; })[0];
+    if (!app) throw new Error('app');
+    var styles = Array.prototype.filter.call(document.querySelectorAll('style'), function (st) { return st.textContent.indexOf('--accent') >= 0; }).map(function (st) { return '<style>' + st.textContent + '</style>'; }).join('\n');
+    var fonts = Array.prototype.map.call(document.querySelectorAll('link[href*="fonts.googleapis.com"]'), function (l) { return l.outerHTML; }).join('\n');
+    var shell = ['header.top', 'main', 'nav.tabs', '#toast', '#file-in'].map(function (sel) {
+      var el = document.querySelector(sel); if (!el) return '';
+      var c = el.cloneNode(true);
+      ['#view', '#nav'].forEach(function (q) { var t = c.matches(q) ? c : c.querySelector(q); if (t) t.innerHTML = ''; });
+      if (c.id === 'toast') { c.textContent = ''; c.className = ''; }
+      c.querySelectorAll('[data-k]').forEach(function (e) { e.textContent = ''; });
+      return c.outerHTML;
+    }).join('\n');
+    var libs = await Promise.all([readLib('pdf-lib', 'pdf-lib.min.js'), readLib('jszip', 'jszip.min.js')]);
+    var seed = JSON.stringify({ at: Date.now(), data: S }).replace(/</g, '\\u003c');
+    return '<!doctype html>\n<html lang="id">\n<head>\n<meta charset="utf-8">\n<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">\n<title>RAB Gedung</title>\n' +
+      HTML_RESET + fonts + '\n' + styles + '\n</head>\n<body>\n' + shell + '\n' +
+      '<script data-lib="pdf-lib">' + jsInline(libs[0]) + '<\/script>\n<script data-lib="jszip">' + jsInline(libs[1]) + '<\/script>\n' +
+      '<script>window.__RAB_SEED=' + seed + ';<\/script>\n<script>' + jsInline(app.textContent) + '<\/script>\n</body>\n</html>\n';
+  }
+  async function exportHTML(p) {
+    toast('Menyiapkan file html...');
+    var html;
+    try { html = await buildStandaloneHTML(); } catch (e) { toast('File html belum bisa dibuat di tampilan ini.'); if (window.console) console.error(e); return; }
+    await save('RAB-Gedung-' + slug(p.nama) + '.html', new Blob([html], { type: 'text/html;charset=utf-8' }));
+  }
+
+  /* ---------- events ---------- */
+  function cloneNew(p) {
+    var q = JSON.parse(JSON.stringify(p)); q.id = uid(); q.nama = (p.nama || 'Proyek') + ' (salinan)'; q.contoh = false;
+    q.divisi.forEach(function (d) { d.id = uid(); d.items.forEach(function (i) { i.id = uid(); }); });
+    return q;
+  }
+  function act(a, id, b) {
+    var p = ap(), x;
+    switch (a) {
+      case 'tab': tab = id; render(); window.scrollTo(0, 0); return;
+      case 'sel-proj': S.activeId = id; touch(); render(); return;
+      case 'new-proj': x = newProject('Proyek baru'); x.hrg = hargaMap(p); S.projects.push(x); S.activeId = x.id; touch(); render(); document.getElementById('proj-' + x.id + '-nama').focus(); return;
+      case 'dup-proj': x = cloneNew(p); S.projects.push(x); S.activeId = x.id; touch(); render(); toast('Proyek diduplikat.'); return;
+      case 'del-proj':
+        if (S.projects.length < 2) { toast('Minimal harus ada satu proyek.'); return; }
+        var gone = S.projects.filter(function (q) { return q.id === (id || p.id); })[0]; if (!gone) return;
+        S.projects = S.projects.filter(function (q) { return q.id !== gone.id; });
+        if (S.activeId === gone.id) S.activeId = S.projects[0].id;
+        touch(); render(); toast('Proyek "' + (gone.nama || 'tanpa nama') + '" dihapus.'); return;
+      case 'std-div':
+        var used = {}, ordered = STD_DIV.map(function (n) {
+          var d = p.divisi.filter(function (y) { return y.nama.trim().toLowerCase() === n.toLowerCase() && !used[y.id]; })[0];
+          if (d) { used[d.id] = 1; return d; }
+          return { id: uid(), nama: n, items: [] };
+        });
+        p.divisi.forEach(function (d) { if (!used[d.id]) ordered.push(d); });
+        p.divisi = ordered; touch(); render(); toast('Divisi standar sudah lengkap.'); return;
+      case 'tgl-div':
+        x = findDiv(p, id); rabOpen[id] = !rabOpen[id]; render(); return;
+      case 'add-div':
+        var nmEl = document.getElementById('dm-new'), nmNew = nmEl && nmEl.value ? nmEl.value.trim() : '';
+        x = { id: uid(), nama: nmNew || 'Pekerjaan baru', items: [] }; p.divisi.push(x); rabOpen[x.id] = true; grpState.dm = true; touch(); render();
+        toast('Divisi ' + huruf(p.divisi.length) + ' ditambahkan.'); return;
+      case 'mv-div':
+        var dd = +b.dataset.dir, di0 = p.divisi.map(function (v) { return v.id; }).indexOf(id), di1 = di0 + dd;
+        if (di0 < 0 || di1 < 0 || di1 >= p.divisi.length) return;
+        p.divisi.splice(di1, 0, p.divisi.splice(di0, 1)[0]); grpState.dm = true; touch(); render();
+        var dnb = document.querySelector('[data-act="mv-div"][data-id="' + id + '"][data-dir="' + dd + '"]');
+        if (dnb && !dnb.disabled) { dnb.focus({ preventScroll: true }); dnb.scrollIntoView({ block: 'center' }); }
+        return;
+      case 'del-div': p.divisi = p.divisi.filter(function (d) { return d.id !== id; }); grpState.dm = true; touch(); render(); toast('Divisi dihapus.'); return;
+      case 'add-adiv':
+        var anEl = document.getElementById('am-new'), anNew = anEl && anEl.value ? anEl.value.trim() : '';
+        anNew = anNew || 'Divisi baru';
+        if (S.ahspDiv.some(function (v) { return v.nama.trim().toLowerCase() === anNew.toLowerCase(); })) { toast('Nama divisi AHSP itu sudah ada.'); return; }
+        S.ahspDiv.push({ id: uid(), nama: anNew }); grpState.am = true; touch(); render(); toast('Divisi AHSP ditambahkan.'); return;
+      case 'mv-adiv':
+        var ad2 = +b.dataset.dir, ai0 = S.ahspDiv.map(function (v) { return v.id; }).indexOf(id), ai1 = ai0 + ad2;
+        if (ai0 < 0 || ai1 < 0 || ai1 >= S.ahspDiv.length) return;
+        S.ahspDiv.splice(ai1, 0, S.ahspDiv.splice(ai0, 1)[0]); grpState.am = true; touch(); render();
+        var anb = document.querySelector('[data-act="mv-adiv"][data-id="' + id + '"][data-dir="' + ad2 + '"]');
+        if (anb && !anb.disabled) { anb.focus({ preventScroll: true }); anb.scrollIntoView({ block: 'center' }); }
+        return;
+      case 'del-adiv': S.ahspDiv = S.ahspDiv.filter(function (v) { return v.id !== id; }); grpState.am = true; touch(); render(); toast('Divisi AHSP dihapus. AHSP di dalamnya pindah ke Belum dikelompokkan.'); return;
+      case 'std-adiv':
+        var have = {}; S.ahspDiv.forEach(function (v) { have[v.nama.trim().toLowerCase()] = 1; });
+        STD_DIV.forEach(function (n) { if (!have[n.toLowerCase()]) S.ahspDiv.push({ id: uid(), nama: n }); });
+        grpState.am = true; touch(); render(); toast('Divisi standar AHSP sudah lengkap.'); return;
+      case 'add-item': x = mkItem('', '', 0, 0); findDiv(p, id).items.push(x); rabOpen[id] = true; touch(); render(); document.getElementById('item-' + x.id + '-ahsp').focus(); return;
+      case 'del-item': p.divisi.forEach(function (d) { d.items = d.items.filter(function (i) { return i.id !== id; }); }); touch(); render(); return;
+      case 'add-ahsp':
+        var ad = findAdiv(id), gi = S.ahspDiv.indexOf(ad), gname = ad ? ad.nama : '';
+        var cnt = S.ahsp.filter(function (a) { return (a.div || '').trim() === gname.trim(); }).length;
+        x = { id: uid(), div: gname, ohp: 10, kode: huruf(gi + 1) + '.' + (cnt + 1), nama: '', satuan: 'm2', komponen: [] };
+        S.ahsp.push(x); openAhsp[x.id] = true; grpState['g' + id] = true; touch(); render(); document.getElementById('ahsp-' + x.id + '-nama').focus(); return;
+      case 'del-ahsp':
+        x = ahspById(id);
+        S.projects.forEach(function (q) { var price = withCtx(q, function () { return ahspPrice(x); }); q.divisi.forEach(function (d) { d.items.forEach(function (i) { if (i.ahsp === id) { i.ahsp = ''; i.harga = price; } }); }); });
+        S.ahsp = S.ahsp.filter(function (a) { return a.id !== id; }); touch(); render(); toast('AHSP dihapus. Item RAB yang memakainya memakai harga lama sampai Anda memilih AHSP lain.'); return;
+      case 'add-kom': x = mkKom(b.dataset.j, '', b.dataset.j === 'upah' ? 'OH' : '', 0, 0); ahspById(id).komponen.push(x); touch(); render(); document.getElementById('kom-' + x.id + '-nama').focus(); return;
+      case 'del-kom': S.ahsp.forEach(function (a) { a.komponen = a.komponen.filter(function (k) { return k.id !== id; }); }); touch(); render(); return;
+      case 'add-mst':
+        x = { id: uid(), nama: '', satuan: MT[id][3], harga: 0 }; if (id === 'bahan') { x.kat = b.dataset.kat || ''; grpState['k:' + x.kat] = true; } S.master[id].push(x); touch(); render(); document.getElementById('mst-' + x.id + '-nama').focus(); return;
+      case 'mv-mst':
+        var dir = +b.dataset.dir, jj = Object.keys(JENIS).filter(function (j) { return S.master[j].some(function (m) { return m.id === id; }); })[0];
+        if (!jj) return;
+        var arr = S.master[jj], at = arr.map(function (m) { return m.id; }).indexOf(id), to = at + dir;
+        while (jj === 'bahan' && to >= 0 && to < arr.length && arr[to].kat !== arr[at].kat) to += dir;
+        if (to < 0 || to >= arr.length) return;
+        arr.splice(to, 0, arr.splice(at, 1)[0]); touch(); render();
+        var nb = document.querySelector('[data-act="mv-mst"][data-id="' + id + '"][data-dir="' + dir + '"]');
+        var tgt = nb && !nb.disabled ? nb : document.getElementById('mst-' + id + '-nama');
+        if (tgt) { tgt.focus({ preventScroll: true }); tgt.scrollIntoView({ block: 'center' }); }
+        return;
+      case 'del-kat':
+        var dk = S.katBahan.indexOf(id); if (dk < 0) return;
+        var nmv = 0; S.master.bahan.forEach(function (m) { if (m.kat === id) { m.kat = ''; nmv++; } });
+        S.katBahan.splice(dk, 1); delete grpState['k:' + id]; if (nmv) grpState['k:'] = true; touch(); render();
+        toast('Kategori dihapus.' + (nmv ? ' ' + nmv + ' material dipindah ke Tanpa kategori.' : '')); return;
+      case 'mv-kat':
+        var ka = S.katBahan, ki = ka.indexOf(id), kt = ki + (+b.dataset.dir);
+        if (ki < 0 || kt < 0 || kt >= ka.length) return;
+        ka.splice(kt, 0, ka.splice(ki, 1)[0]); touch(); render();
+        var kb = document.querySelector('[data-act="mv-kat"][data-id="' + id.replace(/"/g, '\\"') + '"][data-dir="' + b.dataset.dir + '"]');
+        var kg = (kb && !kb.disabled ? kb : null) || document.querySelector('details[data-gid="k:' + id.replace(/"/g, '\\"') + '"] summary');
+        if (kg) { kg.focus({ preventScroll: true }); kg.scrollIntoView({ block: 'center' }); }
+        return;
+      case 'add-kat':
+        var inp = document.getElementById('kat-new'), kn = inp ? inp.value.replace(/\s+/g, ' ').trim() : '';
+        if (!kn) { toast('Ketik nama kategori dulu.'); if (inp) inp.focus(); return; }
+        if (S.katBahan.some(function (k) { return k.toLowerCase() === kn.toLowerCase(); })) { toast('Kategori itu sudah ada.'); return; }
+        S.katBahan.push(kn); grpState['k:' + kn] = true; touch(); render(); toast('Kategori "' + kn + '" ditambahkan.'); return;
+      case 'del-mst':
+        x = masterById(id);
+        S.ahsp.forEach(function (a) { a.komponen.forEach(function (k) { if (k.ref === id) { k.ref = ''; k.nama = x.nama; k.satuan = x.satuan; k.harga = hargaM(x, p); } }); });
+        S.projects.forEach(function (q) { if (q.hrg) delete q.hrg[id]; });
+        Object.keys(JENIS).forEach(function (j) { S.master[j] = S.master[j].filter(function (m) { return m.id !== id; }); });
+        touch(); render(); toast('Dihapus. Komponen AHSP yang memakainya kini berharga manual.'); return;
+      case 'pick':
+        PICK[id] = !!b.checked; try { localStorage.setItem('rab-gedung-pick', JSON.stringify(PICK)); } catch (e) { /* abaikan */ }
+        return;
+      case 'export-pdf':
+        if (!PICK_LIST.some(function (x) { return PICK[x[0]]; })) { toast('Pilih minimal satu bagian untuk disimpan.'); return; }
+        exportPDF(p); return;
+      case 'auto-jadwal': if (autoJadwal(p)) { touch(); render(); toast('Jadwal diisi otomatis. Silakan sesuaikan.'); } else toast('Isi volume di tab RAB dulu.'); return;
+      case 'rks-isi': var nr = rksIsi(p); if (nr) { touch(); render(); toast(nr + ' bagian diisi dengan templat. Silakan sesuaikan.'); } else toast('Semua bagian sudah terisi.'); return;
+      case 'export-html': exportHTML(p); return;
+      case 'export-xlsx':
+        if (!PICK_LIST.some(function (x) { return PICK[x[0]]; })) { toast('Pilih minimal satu bagian untuk disimpan.'); return; } exportXLSX(p); return;
+      case 'export-csv': save(slug(p.nama) + '-RAB.csv', buildCSV(p)); return;
+      case 'export-json': save('cadangan-rab-' + new Date().toISOString().slice(0, 10) + '.json', JSON.stringify(S, null, 1)); return;
+      case 'import-json': $('#file-in').click(); return;
+      case 'copy-sum':
+        x = summaryText(p);
+        var show = function () { var area = $('#copy-area'); area.innerHTML = '<textarea class="copybox" readonly id="copy-text" aria-label="Ringkasan RAB"></textarea>'; var ta = $('#copy-text'); ta.value = x; ta.focus(); ta.select(); };
+        try { navigator.clipboard.writeText(x).then(function () { toast('Ringkasan disalin.'); }, show); } catch (e) { show(); }
+        return;
+    }
+  }
+  document.addEventListener('click', function (e) {
+    var b = e.target.closest('[data-act]'); if (!b || b.disabled) return;
+    if (b.dataset.danger !== undefined && b.dataset.armed !== '1') {
+      b.dataset.armed = '1'; b.dataset.label = b.textContent; b.textContent = 'Ketuk lagi untuk memastikan';
+      setTimeout(function () { if (b.isConnected && b.dataset.armed === '1') { b.dataset.armed = ''; b.textContent = b.dataset.label; } }, 3200);
+      return;
+    }
+    act(b.dataset.act, b.dataset.id, b);
+  });
+  document.addEventListener('input', function (e) {
+    var t = e.target, d = t.dataset; if (!d || !d.f) return;
+    if (d.t === 'divpick') {
+      var dv = findDiv(ap(), d.id);
+      if (dv && t.value) { dv.nama = t.value; touch(); render(); toast('Nama divisi diubah menjadi ' + t.value + '.'); }
+      return;
+    }
+    var o = find(d.t, d.id); if (!o) return;
+    if (d.t === 'mst' && d.f === 'harga') { var pq = ap(); pq.hrg = pq.hrg || {}; pq.hrg[d.id] = parse(t.value); touch(); refresh(); return; }
+    o[d.f] = d.n ? parse(t.value) : t.value;
+    if (d.t === 'proj' && d.f === 'nama') o.contoh = false;
+    if (d.t === 'ahsp' && d.f === 'div') {
+      var tg = S.ahspDiv.filter(function (x) { return x.nama.trim() === t.value.trim(); })[0];
+      grpState[tg ? 'g' + tg.id : 'x'] = true; touch(); render(); return;
+    }
+    if (d.t === 'mst' && d.f === 'kat') { grpState['k:' + t.value] = true; touch(); render(); toast('Dipindah ke ' + (t.value || 'Tanpa kategori') + '.'); return; }
+    if (d.t === 'kom' && d.f === 'jenis') { o.ref = ''; touch(); render(); return; }
+    if (d.t === 'kom' && d.f === 'ref') {
+      var m = masterById(t.value);
+      if (m) { o.nama = m.nama; o.satuan = m.satuan; o.harga = m.harga; o.ref = m.id; } else o.ref = '';
+      touch(); render(); return;
+    }
+    if (d.t === 'item' && d.f === 'ahsp') {
+      var a = ahspById(t.value);
+      if (a) { o.uraian = a.nama; o.satuan = a.satuan || ''; o.harga = 0; } else { o.ahsp = ''; o.uraian = ''; o.satuan = ''; o.harga = 0; }
+      touch(); render(); return;
+    }
+    touch(); refresh();
+    if (d.t === 'ahsp' && d.f === 'satuan') { /* satuan item mengikuti saat AHSP dipilih lagi */ }
+  });
+  document.addEventListener('input', function (e) {
+    var t = e.target; if (!t.dataset || !t.dataset.search) return;
+    var q = t.value.trim().toLowerCase();
+    document.querySelectorAll('.mcard').forEach(function (c) { c.hidden = !!q && c.dataset.q.indexOf(q) < 0; });
+    document.querySelectorAll('#view details.grp').forEach(function (g) {
+      var cs = g.querySelectorAll('.mcard'); if (!cs.length) return;
+      var any = Array.prototype.some.call(cs, function (c) { return !c.hidden; });
+      g.hidden = !!q && !any; if (q && any) g.open = true;
+    });
+  });
+  /* Mengganti nama divisi di tab AHSP ikut memindahkan AHSP di dalamnya. Mengganti nama divisi di tab RAB tidak memengaruhi AHSP. */
+  var renameFrom = {};
+  document.addEventListener('change', function (e) {
+    var t = e.target; if (!t.dataset || t.dataset.katname === undefined) return;
+    var old = t.dataset.katname, nn = t.value.replace(/\s+/g, ' ').trim(), i = S.katBahan.indexOf(old);
+    if (i < 0 || nn === old) { t.value = old; return; }
+    if (!nn) { toast('Nama kategori tidak boleh kosong.'); t.value = old; return; }
+    if (S.katBahan.some(function (k, q) { return q !== i && k.toLowerCase() === nn.toLowerCase(); })) { toast('Nama kategori itu sudah dipakai.'); t.value = old; return; }
+    S.katBahan[i] = nn; S.master.bahan.forEach(function (m) { if (m.kat === old) m.kat = nn; });
+    grpState['k:' + nn] = grpState['k:' + old]; delete grpState['k:' + old]; touch(); render(); toast('Nama kategori diubah.');
+  });
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Enter' && e.target.dataset && e.target.dataset.katname !== undefined) { e.preventDefault(); e.target.blur(); }
+    if (e.key === 'Enter' && e.target.id === 'dm-new') { e.preventDefault(); act('add-div'); }
+    if (e.key === 'Enter' && e.target.id === 'am-new') { e.preventDefault(); act('add-adiv'); }
+    if (e.key === 'Enter' && e.target.id === 'kat-new') { e.preventDefault(); act('add-kat'); }
+  });
+  document.addEventListener('focusin', function (e) {
+    var d = e.target.dataset;
+    if (d && d.t === 'adiv' && d.f === 'nama') { var o = find('adiv', d.id); if (o) renameFrom[d.id] = o.nama; }
+  });
+  document.addEventListener('focusout', function (e) {
+    var d = e.target.dataset; if (!d || d.t !== 'adiv' || d.f !== 'nama') return;
+    var from = renameFrom[d.id], o = find('adiv', d.id); delete renameFrom[d.id];
+    if (!from || !o || !o.nama.trim() || o.nama === from) return;
+    var moved = false;
+    S.ahsp.forEach(function (a) { if ((a.div || '').trim() === from.trim()) { a.div = o.nama; moved = true; } });
+    if (moved) touch();
+  });
+  document.addEventListener('focusout', function (e) {
+    var t = e.target; if (t.dataset && t.dataset.n && !t.readOnly) { var v = parse(t.value); t.value = v === 0 ? '' : (t.dataset.plain ? String(Math.round(v)) : num(v)); }
+  });
+  document.addEventListener('toggle', function (e) {
+    var d = e.target;
+    if (d.dataset && d.dataset.gid) grpState[d.dataset.gid] = d.open;
+    if (d.dataset && d.dataset.aid) { if (d.open) openAhsp[d.dataset.aid] = true; else delete openAhsp[d.dataset.aid]; }
+  }, true);
+  $('#file-in').addEventListener('change', function (e) {
+    var f = e.target.files && e.target.files[0]; if (!f) return;
+    var r = new FileReader();
+    r.onload = function () {
+      try { var d = norm(JSON.parse(r.result)); d.updatedAt = Date.now(); S = d; touch(); render(); toast('Cadangan dibuka.'); }
+      catch (err) { toast('File ini bukan cadangan RAB yang valid.'); }
+    };
+    r.readAsText(f); e.target.value = '';
+  });
+
+  S = loadLocal();
+  /* Berkas .html yang dibagikan membawa data pengirim. Data dipakai satu kali per berkas; bila perangkat sudah punya data sendiri, pengguna ditanya dulu. */
+  if (window.__RAB_SEED && window.__RAB_SEED.data) {
+    var seedAt = String(window.__RAB_SEED.at || ''), seen = '';
+    try { seen = localStorage.getItem(KEY + '-seed') || ''; } catch (e) { seen = ''; }
+    if (seedAt && seen !== seedAt) {
+      var sd = null; try { sd = norm(window.__RAB_SEED.data); } catch (e) { sd = null; }
+      if (sd) {
+        var pakai = !S || S.projects.every(function (q) { return q.contoh; });
+        if (!pakai) { try { pakai = window.confirm('File ini membawa data proyek dari pengirim. Pakai data dari file ini?\n\nData di perangkat ini akan diganti. Simpan cadangan dulu bila perlu.'); } catch (e) { pakai = false; } }
+        if (pakai) { S = sd; S.updatedAt = Date.now(); touch(); }
+      }
+      try { localStorage.setItem(KEY + '-seed', seedAt); } catch (e) { /* abaikan */ }
+    }
+  }
+  S = S || sample();
+  setStatus();
+  render();
+  connectRemote();
+})();
+</script>
+</body>
+</html>

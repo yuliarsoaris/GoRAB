@@ -1,0 +1,29 @@
+RAB GEDUNG - PAKET APLIKASI (PWA)
+
+Isi folder ini adalah aplikasi lengkap. Setelah diunggah ke hosting web, aplikasi bisa dipasang di
+handphone seperti aplikasi biasa dan tetap bisa dibuka tanpa internet.
+
+CARA 1 - NETLIFY DROP (paling mudah, gratis)
+1. Buka https://app.netlify.com/drop (daftar gratis dengan email bila diminta).
+2. Ekstrak file zip ini, lalu tarik FOLDER hasil ekstrak (yang berisi index.html) ke halaman itu.
+3. Tunggu beberapa detik. Anda mendapat alamat seperti https://nama-acak.netlify.app
+4. Di Netlify, menu Site configuration > Change site name untuk mengganti nama alamat.
+
+CARA 2 - GITHUB PAGES (gratis)
+1. Buat repositori publik baru di GitHub, unggah seluruh isi folder ini ke cabang utama.
+2. Settings > Pages > Source: "Deploy from a branch" > pilih cabang utama, folder "/ (root)".
+3. Alamat: https://NAMA-ANDA.github.io/NAMA-REPO/
+
+MEMASANG DI HANDPHONE
+- Android (Chrome): buka alamat tadi, ketuk menu titik tiga > "Instal aplikasi" atau "Tambahkan ke layar utama".
+- iPhone (Safari): buka alamat tadi, ketuk tombol Bagikan > "Tambahkan ke Layar Utama".
+Buka sekali saat internet menyala supaya file tersimpan, setelah itu bisa dipakai tanpa internet.
+
+CATATAN PENTING
+- Data proyek tersimpan di handphone masing-masing (di browser/aplikasi itu), tidak di server dan tidak di akun Claude.
+  Simpan cadangan (.json) lewat Proyek > Bagikan secara berkala. Menghapus data browser akan menghapus data aplikasi.
+- Data di aplikasi Claude (artefak) dan di aplikasi yang dipasang ini terpisah. Pindahkan lewat cadangan .json:
+  Simpan cadangan di artefak, lalu Buka cadangan di aplikasi terpasang.
+- Kalau aplikasi diperbarui, unggah ulang folder yang sama ke hosting. Pemakai mendapat versi baru
+  saat membuka aplikasi dengan internet menyala.
+- Ikon aplikasi: icons/. Untuk mengganti, timpa file PNG dengan nama yang sama.
